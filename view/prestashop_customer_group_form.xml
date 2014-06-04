@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<form string="Prestashop Customer Group" col="4">
+    <label name="prestashop_app"/>
+    <field name="prestashop_app"/>
+    <label name="name"/>
+    <field name="name"/>
+    <label name="customer_group"/>
+    <field name="customer_group"/>
+</form>

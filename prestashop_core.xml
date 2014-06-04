@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <menuitem name="Prestashop" id="menu_prestashop" parent="sale.menu_configuration" sequence="3"/>
+
+        <!--Prestashop APP -->
+        <record model="ir.ui.view" id="prestashop_app_form">
+            <field name="model">prestashop.app</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_app_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_app_tree">
+            <field name="model">prestashop.app</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_app_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_app">
+            <field name="model" search="[('model', '=', 'prestashop.app')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+
+        <record model="ir.action.act_window" id="act_prestashop_app_form">
+            <field name="name">Prestashop APP</field>
+            <field name="res_model">prestashop.app</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_app_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_app_tree"/>
+            <field name="act_window" ref="act_prestashop_app_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_app_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_app_form"/>
+            <field name="act_window" ref="act_prestashop_app_form"/>
+        </record>
+        <menuitem parent="menu_prestashop" action="act_prestashop_app_form"
+            id="menu_prestashop_app_form" sequence="10"/>
+
+        <!--Prestashop Website -->
+        <record model="ir.ui.view" id="prestashop_website_form">
+            <field name="model">prestashop.website</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_website_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_website_tree">
+            <field name="model">prestashop.website</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_website_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_website">
+            <field name="model" search="[('model', '=', 'prestashop.website')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_website_form">
+            <field name="name">Prestashop Website</field>
+            <field name="res_model">prestashop.website</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_website_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_website_tree"/>
+            <field name="act_window" ref="act_prestashop_website_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_website_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_website_form"/>
+            <field name="act_window" ref="act_prestashop_website_form"/>
+        </record>
+        <menuitem parent="menu_prestashop_app_form" action="act_prestashop_website_form"
+            id="menu_prestashop_website_form" sequence="10"/>
+
+        <!--Prestashop Region -->
+        <record model="ir.ui.view" id="prestashop_region_form">
+            <field name="model">prestashop.region</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_region_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_region_tree">
+            <field name="model">prestashop.region</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_region_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_region">
+            <field name="model" search="[('model', '=', 'prestashop.region')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_region_form">
+            <field name="name">Prestashop Region</field>
+            <field name="res_model">prestashop.region</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_region_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_region_tree"/>
+            <field name="act_window" ref="act_prestashop_region_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_region_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_region_form"/>
+            <field name="act_window" ref="act_prestashop_region_form"/>
+        </record>
+        <menuitem parent="menu_prestashop" action="act_prestashop_region_form"
+            id="menu_prestashop_region_form" sequence="10"/>
+
+        <!--Prestashop APP Customer -->
+        <record model="ir.model.access" id="access_prestashop_app_customer">
+            <field name="model" search="[('model', '=', 'prestashop.app.customer')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+
+        <!--Prestashop Shop Status -->
+        <record model="ir.ui.view" id="prestashop_shop_status_form">
+            <field name="model">prestashop.shop.status</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_shop_status_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_shop_status_tree">
+            <field name="model">prestashop.shop.status</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_shop_status_tree</field>
+        </record>
+        <record model="ir.model.access" id="access_prestashop_shop_status">
+            <field name="model" search="[('model', '=', 'prestashop.shop.status')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+
+        <!--Prestashop Customer Group -->
+        <record model="ir.ui.view" id="prestashop_customer_group_form">
+            <field name="model">prestashop.customer.group</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_customer_group_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_customer_group_tree">
+            <field name="model">prestashop.customer.group</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_customer_group_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_customer_group">
+            <field name="model" search="[('model', '=', 'prestashop.customer.group')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_customer_group_form">
+            <field name="name">Prestashop Customer Group</field>
+            <field name="res_model">prestashop.customer.group</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_customer_group_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_customer_group_tree"/>
+            <field name="act_window" ref="act_prestashop_customer_group_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_customer_group_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_customer_group_form"/>
+            <field name="act_window" ref="act_prestashop_customer_group_form"/>
+        </record>
+        <menuitem parent="prestashop.menu_prestashop" action="act_prestashop_customer_group_form"
+            id="menu_prestashop_customer_group_form" sequence="10"/>
+
+        <!--Prestashop Language -->
+        <record model="ir.ui.view" id="prestashop_app_language_form">
+            <field name="model">prestashop.app.language</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_language_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_app_language_tree">
+            <field name="model">prestashop.app.language</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_language_tree</field>
+        </record>
+
+        <!--Prestashop Tax -->
+        <record model="ir.ui.view" id="prestashop_tax_form">
+            <field name="model">prestashop.tax</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_tax_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_tax_tree">
+            <field name="model">prestashop.tax</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_tax_tree</field>
+        </record>
+    </data>
+</tryton>

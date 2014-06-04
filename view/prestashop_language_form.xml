@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<form string="Prestashop Language">
+    <label name="lang"/>
+    <field name="lang"/>
+    <label name="default"/>
+    <field name="default"/>
+    <label name="app"/>
+    <field name="app"/>
+</form>

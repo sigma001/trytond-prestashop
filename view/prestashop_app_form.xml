@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<form string="Prestashop APP" col="4">
+    <label name="name"/>
+    <field name="name"/>
+    <notebook>
+        <page string="General" id="general">
+            <label name="debug"/>
+            <field name="debug"/>
+            <label name="customer_default_group"/>
+            <field name="customer_default_group"/>
+            <label name="product_options"/>
+            <field name="product_options"/>
+            <separator id="languages" string="Languages" colspan="4"/>
+            <field name="languages" colspan="4"/>
+        </page>
+        <page string="Authentication" id="authentication">
+            <label name="uri"/>
+            <field name="uri" colspan="3"/>
+            <label name="username"/>
+            <field name="username"/>
+            <label name="password"/>
+            <field name="password" widget="password"/>
+            <button name="test_connection" string="Test Connection" colspan="4"/>
+        </page>
+        <page string="Import" id="import">
+            <separator string="Store" colspan="4" id="store"/>
+            <button name="core_store" string="Import Prestashop Store" colspan="4"/>
+            <separator string="Customer" colspan="4" id="customer"/>
+            <button name="core_customer_group" string="Import Customer Group" colspan="4"/>
+        </page>
+        <page string="Countries" id="countries">
+            <separator string="Countries" colspan="4" id="countries"/>
+            <field name="prestashop_countries" colspan="4"/>
+            <button name="core_regions" string="Import Regions" colspan="4"/>
+            <separator string="Regions" colspan="4" id="regions"/>
+            <field name="prestashop_regions" colspan="4"/>
+        </page>
+    </notebook>
+    <notebook>
+        <page string="Taxes" id="taxes">
+            <field name="prestashop_taxes" colspan="4"/>
+            <separator string="Default taxes" colspan="4" id="default-taxes"/>
+            <label
+                string="Default taxes when create a new product and don't have tax in Prestashop."
+                id="default-taxes-info"
+                yalign="0.0" xalign="0.0" xexpand="1"/>
+            <field name="default_taxes" colspan="4"/>
+        </page>
+        <page string="Websites" id="websites">
+            <field name="prestashop_websites"/>
+        </page>
+    </notebook>
+</form>

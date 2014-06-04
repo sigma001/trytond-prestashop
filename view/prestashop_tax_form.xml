@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<form string="Prestashop Tax" col="4">
+    <label name="tax_id"/>
+    <field name="tax_id"/>
+    <label name="tax"/>
+    <field name="tax"/>
+    <label name="sequence"/>
+    <field name="sequence"/>
+    <label name="prestashop_app"/>
+    <field name="prestashop_app"/>
+</form>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <!--Prestashop External Referential -->
+        <record model="ir.ui.view" id="prestashop_external_referential_form">
+            <field name="model">prestashop.external.referential</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_referential_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_external_referential_tree">
+            <field name="model">prestashop.external.referential</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_referential_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_external_referential">
+            <field name="model" search="[('model', '=', 'prestashop.external.referential')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+
+        <record model="ir.action.act_window" id="act_prestashop_external_referential_form">
+            <field name="name">External Referential</field>
+            <field name="res_model">prestashop.external.referential</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_external_referential_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_external_referential_tree"/>
+            <field name="act_window" ref="act_prestashop_external_referential_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_external_referential_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_external_referential_form"/>
+            <field name="act_window" ref="act_prestashop_external_referential_form"/>
+        </record>
+        <menuitem parent="menu_prestashop" action="act_prestashop_external_referential_form"
+            id="menu_prestashop_external_referential_form" sequence="5"/>
+    </data>
+</tryton>

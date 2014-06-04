@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<form string="Prestashop Region" col="4">
+    <label name="prestashop_app"/>
+    <field name="prestashop_app"/>
+    <label name="subdivision"/>
+    <field name="subdivision"/>
+    <label name="name"/>
+    <field name="name"/>
+    <label name="code"/>
+    <field name="code"/>
+    <label name="region_id"/>
+    <field name="region_id"/>
+</form>

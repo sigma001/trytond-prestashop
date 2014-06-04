@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<tree string="Status">
+    <field name="status"/>
+    <field name="shop"/>
+    <field name="confirm"/>
+    <field name="cancel"/>
+    <field name="paidinweb"/>
+</tree>

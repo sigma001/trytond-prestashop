@@ -1,0 +1,923 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:prestashop.app:"
+msgid "Add default values in configuration sale!"
+msgstr "Afegeix valors per defecte a la configuració de la botiga"
+
+msgctxt "error:prestashop.app:"
+msgid ""
+"Prestashop connection are successfully but you need configure your Prestashop "
+"first"
+msgstr ""
+"La connexió amb Prestashop s'ha realitzat correctament però ha de configurar el"
+" seu Prestashop primer."
+
+msgctxt "error:prestashop.app:"
+msgid "Prestashop connection are successfully!"
+msgstr "La connexió amb Prestashop s''ha realitzat correctament."
+
+msgctxt "error:prestashop.app:"
+msgid "Prestashop connection failed!"
+msgstr "La connexió amb Prestashop no s''ha realizat correctament."
+
+msgctxt "error:sale.shop:"
+msgid "Install Prestashop Product module to export products to Prestashop"
+msgstr ""
+"Instal·la el mòdul prestashop_product per la exportació de productes a Prestashop"
+
+msgctxt "error:sale.shop:"
+msgid "Prestashop \"%s\". Error connection or get earlier date: \"%s\"."
+msgstr "Prestashop \"%s\". Error en la connexió o una data mes propera: \"%s\"."
+
+msgctxt "error:sale.shop:"
+msgid "Threre are not orders to export"
+msgstr "No hi han comandes a exportar"
+
+msgctxt "field:prestashop.app,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.app,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.app,customer_default_group:"
+msgid "Customer Group"
+msgstr "Grup client"
+
+msgctxt "field:prestashop.app,debug:"
+msgid "Debug"
+msgstr "Debug"
+
+msgctxt "field:prestashop.app,default_taxes:"
+msgid "Default Taxes"
+msgstr "Impostos per defecte"
+
+msgctxt "field:prestashop.app,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.app,languages:"
+msgid "Languages"
+msgstr "Idiomes"
+
+msgctxt "field:prestashop.app,prestashop_countries:"
+msgid "Countries"
+msgstr "Païssos"
+
+msgctxt "field:prestashop.app,prestashop_default_storeview:"
+msgid "Store View Default"
+msgstr "Store View defecte"
+
+msgctxt "field:prestashop.app,prestashop_regions:"
+msgid "Regions"
+msgstr "Regions"
+
+msgctxt "field:prestashop.app,prestashop_taxes:"
+msgid "Taxes"
+msgstr "Impostos"
+
+msgctxt "field:prestashop.app,prestashop_websites:"
+msgid "Websites"
+msgstr "Botigues"
+
+msgctxt "field:prestashop.app,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app,password:"
+msgid "Password"
+msgstr "Mot de pas"
+
+msgctxt "field:prestashop.app,product_options:"
+msgid "Product Options"
+msgstr "Opcions del producte"
+
+msgctxt "field:prestashop.app,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app,uri:"
+msgid "URI"
+msgstr "URI"
+
+msgctxt "field:prestashop.app,username:"
+msgid "Username"
+msgstr "Nom usuari"
+
+msgctxt "field:prestashop.app,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.app,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.app-country.country,app:"
+msgid "Prestashop APP"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.app-country.country,country:"
+msgid "Country"
+msgstr "Pais"
+
+msgctxt "field:prestashop.app-country.country,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.app-country.country,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.app-country.country,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.app-country.country,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app-country.country,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.app-country.country,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.app-default.taxes,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.app-default.taxes,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.app-default.taxes,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.app-default.taxes,prestashop_app:"
+msgid "Prestashop APP"
+msgstr "Prestashop APP"
+
+msgctxt "field:prestashop.app-default.taxes,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app-default.taxes,tax:"
+msgid "Tax"
+msgstr "Impost"
+
+msgctxt "field:prestashop.app-default.taxes,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.app-default.taxes,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.app.customer,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.app.customer,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.app.customer,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.app.customer,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.app.customer,prestashop_customer_group:"
+msgid "Customer Group"
+msgstr "Grup client"
+
+msgctxt "field:prestashop.app.customer,prestashop_emailid:"
+msgid "Email Address"
+msgstr "Direcció Email"
+
+msgctxt "field:prestashop.app.customer,prestashop_storeview:"
+msgid "Last Store View"
+msgstr "Última visita botiga"
+
+msgctxt "field:prestashop.app.customer,prestashop_storeview_ids:"
+msgid "Store Views"
+msgstr "Store Views"
+
+msgctxt "field:prestashop.app.customer,prestashop_vat:"
+msgid "Prestashop VAT"
+msgstr "Prestashop CIF/NIF"
+
+msgctxt "field:prestashop.app.customer,party:"
+msgid "Party"
+msgstr "Tercers"
+
+msgctxt "field:prestashop.app.customer,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app.customer,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.app.customer,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,app:"
+msgid "Prestashop APP"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,storeview:"
+msgid "Storeview"
+msgstr "Storeview"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.app.customer-prestashop.storeview,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.app.language,app:"
+msgid "Prestashop APP"
+msgstr "Prestashop APP"
+
+msgctxt "field:prestashop.app.language,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.app.language,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.app.language,default:"
+msgid "Default"
+msgstr "Per defecte"
+
+msgctxt "field:prestashop.app.language,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.app.language,lang:"
+msgid "Language"
+msgstr "Idioma"
+
+msgctxt "field:prestashop.app.language,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.app.language,storeview:"
+msgid "Store View"
+msgstr "Store View"
+
+msgctxt "field:prestashop.app.language,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.app.language,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.customer.group,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.customer.group,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.customer.group,customer_group:"
+msgid "Customer Group ID"
+msgstr "Grup client ID"
+
+msgctxt "field:prestashop.customer.group,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.customer.group,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.customer.group,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.customer.group,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.customer.group,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.customer.group,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.external.referential,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.external.referential,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.external.referential,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.external.referential,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.external.referential,pts_id:"
+msgid "Prestashop ID"
+msgstr "Prestashop ID"
+
+msgctxt "field:prestashop.external.referential,model:"
+msgid "Tryton Model"
+msgstr "Model Tryton"
+
+msgctxt "field:prestashop.external.referential,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.external.referential,try_id:"
+msgid "Tryton ID"
+msgstr "Tryton ID"
+
+msgctxt "field:prestashop.external.referential,write_date:"
+msgid "Write Date"
+msgstr "Data modificaci"
+
+msgctxt "field:prestashop.external.referential,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.region,code:"
+msgid "Code"
+msgstr "Codi"
+
+msgctxt "field:prestashop.region,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.region,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.region,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.region,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.region,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.region,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.region,region_id:"
+msgid "Region ID"
+msgstr "Regió ID"
+
+msgctxt "field:prestashop.region,subdivision:"
+msgid "Subdivision"
+msgstr "Subdivisió"
+
+msgctxt "field:prestashop.region,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.region,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.shop.status,cancel:"
+msgid "Cancel"
+msgstr "Cancel·la"
+
+msgctxt "field:prestashop.shop.status,confirm:"
+msgid "Confirm"
+msgstr "Confirma"
+
+msgctxt "field:prestashop.shop.status,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.shop.status,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.shop.status,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.shop.status,paidinweb:"
+msgid "Paid in web"
+msgstr "Pagat en web"
+
+msgctxt "field:prestashop.shop.status,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.shop.status,shop:"
+msgid "Shop"
+msgstr "Tienda"
+
+msgctxt "field:prestashop.shop.status,status:"
+msgid "Status"
+msgstr "Estats"
+
+msgctxt "field:prestashop.shop.status,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.shop.status,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.storegroup,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.storegroup,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.storegroup,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.storegroup,prestashop_storeviews:"
+msgid "Store View"
+msgstr "Store View"
+
+msgctxt "field:prestashop.storegroup,prestashop_website:"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "field:prestashop.storegroup,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.storegroup,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.storegroup,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.storegroup,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.storeview,code:"
+msgid "Code"
+msgstr "Codi"
+
+msgctxt "field:prestashop.storeview,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.storeview,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.storeview,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.storeview,prestashop_storegroup:"
+msgid "Prestashop Store Group"
+msgstr "Prestashop Store Group"
+
+msgctxt "field:prestashop.storeview,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.storeview,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.storeview,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.storeview,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.tax,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.tax,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.tax,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.tax,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.tax,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.tax,sequence:"
+msgid "Sequence"
+msgstr "Seqüència"
+
+msgctxt "field:prestashop.tax,tax:"
+msgid "Tax"
+msgstr "Impost"
+
+msgctxt "field:prestashop.tax,tax_id:"
+msgid "Prestashop Tax"
+msgstr "Impost Prestashop"
+
+msgctxt "field:prestashop.tax,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.tax,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:prestashop.website,code:"
+msgid "Code"
+msgstr "Codi"
+
+msgctxt "field:prestashop.website,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:prestashop.website,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:prestashop.website,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.website,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.website,prestashop_storegroups:"
+msgid "Store Group"
+msgstr "Store Group"
+
+msgctxt "field:prestashop.website,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.website,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:prestashop.website,sale_shop:"
+msgid "Sale Shop"
+msgstr "Vendes per botiga"
+
+msgctxt "field:prestashop.website,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:prestashop.website,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "field:sale.shop,esale_delivery_product:"
+msgid "Delivery Product"
+msgstr "Producte entrega"
+
+msgctxt "field:sale.shop,esale_discount_product:"
+msgid "Discount Product"
+msgstr "Producte descompte"
+
+msgctxt "field:sale.shop,esale_uom_product:"
+msgid "Default UOM"
+msgstr "UdM per defecte"
+
+msgctxt "field:sale.shop,prestashop_website:"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "help:prestashop.app,customer_default_group:"
+msgid "Default Customer Group"
+msgstr "Grup de client per defecte"
+
+msgctxt "help:prestashop.app,default_taxes:"
+msgid "Default taxes when create a product"
+msgstr "Impostos per defecte quan es crea un producte"
+
+msgctxt "help:prestashop.app,prestashop_default_storeview:"
+msgid "Default language this shop. If not select, use lang user"
+msgstr "Idioma per defecte. Si no s'utilitzarà el de l'usuari"
+
+msgctxt "help:prestashop.app,product_options:"
+msgid "Orders with product options. Split reference order line by \"-\""
+msgstr "Comandes amb opcions de producte. Extreu la referència per \"-\""
+
+msgctxt "help:prestashop.app,uri:"
+msgid "URI Prestashop App. http://yourprestashop.com/ (with / at end)"
+msgstr "URL Prestashop APP. http://www.yourprestashop.com/ (amb / al final)"
+
+msgctxt "help:prestashop.app.customer,prestashop_emailid:"
+msgid "Prestashop uses this email ID to match the customer."
+msgstr "Prestashop utiliza aquest ID com a correu per buscar clients."
+
+msgctxt "help:prestashop.app.customer,prestashop_storeview:"
+msgid "Last store view where the customer has bought."
+msgstr "La última botiga que el client ha comprat"
+
+msgctxt "help:prestashop.app.customer,prestashop_vat:"
+msgid ""
+"To be able to receive customer VAT number you must set it in Prestashop Admin "
+"Panel, menu System / Configuration / Client Configuration / Name and Address"
+" Options."
+msgstr ""
+"Per rebre el número de CIF/NIF ha d'estar actiu a Prestashop a Sistema / "
+"Configuració / Clients / Nom i adreces"
+
+msgctxt "help:prestashop.app.language,default:"
+msgid "Language is default Language in Prestashop"
+msgstr "Idioma per defecte a Prestashop"
+
+msgctxt "help:prestashop.shop.status,cancel:"
+msgid "Sale Order change state draft to cancel"
+msgstr "Comandes cambia l'estat de borrador a cancel·lat"
+
+msgctxt "help:prestashop.shop.status,confirm:"
+msgid ""
+"Confirm order. Sale Order change state draft to done, and generate picking "
+"and/or invoice automatlly"
+msgstr ""
+"Confirmar comanda. La comanda cambiarà de borrador a realitzat, i generarà "
+"un albarà o factura automàticament."
+
+msgctxt "help:prestashop.shop.status,paidinweb:"
+msgid "Sale Order is paid online (virtual payment)"
+msgstr "Pedido venta es pagado on-line (pago virtual)"
+
+msgctxt "help:prestashop.shop.status,status:"
+msgid "Code Status (example, cancel, pending, processing,..)"
+msgstr "Codi estats (exemple: cancel, pending, processing...)"
+
+msgctxt "help:prestashop.tax,tax_id:"
+msgid "Prestashop Tax ID"
+msgstr "ID impost de Prestashop"
+
+msgctxt "model:ir.action,name:act_prestashop_app_form"
+msgid "Prestashop APP"
+msgstr "Prestashop App"
+
+msgctxt "model:ir.action,name:act_prestashop_customer_group_form"
+msgid "Prestashop Customer Group"
+msgstr "Prestashop grup clients"
+
+msgctxt "model:ir.action,name:act_prestashop_region_form"
+msgid "Prestashop Region"
+msgstr "Regions Prestashop"
+
+msgctxt "model:ir.action,name:act_prestashop_storegroup_form"
+msgid "Prestashop Store Group"
+msgstr "Prestashop Store Group"
+
+msgctxt "model:ir.action,name:act_prestashop_storeview_form"
+msgid "Prestashop Store View"
+msgstr "Prestashop Store View"
+
+msgctxt "model:ir.action,name:act_prestashop_website_form"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop"
+msgid "Prestashop"
+msgstr "Prestashop"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_app_form"
+msgid "Prestashop APP"
+msgstr "Prestashop App"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_customer_group_form"
+msgid "Prestashop Customer Group"
+msgstr "Prestashop grup clients"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_region_form"
+msgid "Prestashop Region"
+msgstr "Regions Prestashop"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_storegroup_form"
+msgid "Prestashop Store Group"
+msgstr "Prestashop Store Group"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_storeview_form"
+msgid "Prestashop Store View"
+msgstr "Prestashop Store View"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_website_form"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "model:prestashop.app,name:"
+msgid "Prestashop APP"
+msgstr "Prestashop App"
+
+msgctxt "model:prestashop.app-country.country,name:"
+msgid "Prestashop APP - Country"
+msgstr "Prestashop App - Païssos"
+
+msgctxt "model:prestashop.app-default.taxes,name:"
+msgid "Prestashop APP - Customer Tax"
+msgstr "Prestashop APP - Taxes client"
+
+msgctxt "model:prestashop.app.customer,name:"
+msgid "Prestashop App Customer"
+msgstr "Prestashop App Clients"
+
+msgctxt "model:prestashop.app.customer-prestashop.storeview,name:"
+msgid "Prestashop APP Customer - Prestashop StoreView"
+msgstr "Prestashop App Clients - Prestashop StoreView"
+
+msgctxt "model:prestashop.app.language,name:"
+msgid "Prestashop APP - Language"
+msgstr "Prestashop APP - Idioma"
+
+msgctxt "model:prestashop.customer.group,name:"
+msgid "Prestashop Customer Group"
+msgstr "Prestashop grup clients"
+
+msgctxt "model:prestashop.external.referential,name:"
+msgid "Prestashop External Referential"
+msgstr "Prestashop External Referential"
+
+msgctxt "model:prestashop.region,name:"
+msgid "Prestashop Region"
+msgstr "Regions Prestashop"
+
+msgctxt "model:prestashop.shop.status,name:"
+msgid "Prestashop Shop Status"
+msgstr "Prestashop estat botiga"
+
+msgctxt "model:prestashop.storegroup,name:"
+msgid "Prestashop Store Group"
+msgstr "Prestashop Store Group"
+
+msgctxt "model:prestashop.storeview,name:"
+msgid "Prestashop Store View"
+msgstr "Prestashop Store View"
+
+msgctxt "model:prestashop.tax,name:"
+msgid "Prestashop Tax"
+msgstr "Impost Prestashop"
+
+msgctxt "model:prestashop.website,name:"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "view:prestashop.app.language:"
+msgid "Prestashop Language"
+msgstr "Idioma Prestashop"
+
+msgctxt "view:prestashop.app:"
+msgid "Authentication"
+msgstr "Autentificació"
+
+msgctxt "view:prestashop.app:"
+msgid "Countries"
+msgstr "Païssos"
+
+msgctxt "view:prestashop.app:"
+msgid "Customer"
+msgstr "Client"
+
+msgctxt "view:prestashop.app:"
+msgid "Default taxes"
+msgstr "Impostos defecte"
+
+msgctxt "view:prestashop.app:"
+msgid "Default taxes when create a new product and don't have tax in Prestashop."
+msgstr ""
+"Impostos por defecte quan crea un nou producte i no disposa d'impost a "
+"Prestashop."
+
+msgctxt "view:prestashop.app:"
+msgid "General"
+msgstr "General"
+
+msgctxt "view:prestashop.app:"
+msgid "Import"
+msgstr "Importa"
+
+msgctxt "view:prestashop.app:"
+msgid "Import Customer Group"
+msgstr "Importa grup clients"
+
+msgctxt "view:prestashop.app:"
+msgid "Import Prestashop Store"
+msgstr "Importa Prestashop Store"
+
+msgctxt "view:prestashop.app:"
+msgid "Import Regions"
+msgstr "Importa regions"
+
+msgctxt "view:prestashop.app:"
+msgid "Languages"
+msgstr "Idiomes"
+
+msgctxt "view:prestashop.app:"
+msgid "Prestashop APP"
+msgstr "Prestashop APP"
+
+msgctxt "view:prestashop.app:"
+msgid "Regions"
+msgstr "Regions"
+
+msgctxt "view:prestashop.app:"
+msgid "Store"
+msgstr "Botiga"
+
+msgctxt "view:prestashop.app:"
+msgid "Taxes"
+msgstr "Impostos"
+
+msgctxt "view:prestashop.app:"
+msgid "Test Connection"
+msgstr "Test connexió"
+
+msgctxt "view:prestashop.app:"
+msgid "Websites"
+msgstr "Botigues"
+
+msgctxt "view:prestashop.customer.group:"
+msgid "Prestashop Customer Group"
+msgstr "Prestashop grup clients"
+
+msgctxt "view:prestashop.external.referential:"
+msgid "Prestashop APP"
+msgstr "Prestashop APP"
+
+msgctxt "view:prestashop.region:"
+msgid "Prestashop Region"
+msgstr "Regions Prestashop"
+
+msgctxt "view:prestashop.shop.status:"
+msgid "Status"
+msgstr "Estados"
+
+msgctxt "view:prestashop.storegroup:"
+msgid "Prestashop Store Group"
+msgstr "Prestashop Store Group"
+
+msgctxt "view:prestashop.storeview:"
+msgid "Prestashop Store View"
+msgstr "Prestashop Store View"
+
+msgctxt "view:prestashop.tax:"
+msgid "Prestashop Tax"
+msgstr "Impost Prestashop"
+
+msgctxt "view:prestashop.website:"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "view:sale.shop:"
+msgid "Prestashop"
+msgstr "Prestashop"

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<data>
+    <xpath
+        expr="/form/notebook/page[@id='esale']/notebook/page[@id='configuration']"
+        position="inside">
+        <page string="Prestashop" col="4" id="prestashop" states="{'invisible': Not(Equal(Eval('esale_shop_app'), 'prestashop'))}">
+            <label name="prestashop_website"/>
+            <field name="prestashop_website"/>
+        </page>
+    </xpath>
+</data>
