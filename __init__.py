@@ -17,6 +17,7 @@ def register():
         PrestashopShopStatus,
         PrestashopAppCountry,
         PrestashopAppLanguage,
+        PrestashopAppLanguage,
         PrestashopApp2,
         PrestashopExternalReferential,
         PrestashopTax,

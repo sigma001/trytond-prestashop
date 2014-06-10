@@ -11,7 +11,7 @@ import logging
 __all__ = ['PrestashopApp','PrestashopWebsite', 
     'PrestashopCustomerGroup','PrestashopRegion',
     'PrestashopAppCustomer','PrestashopShopStatus',
-    'PrestashopAppCountry',
+    'PrestashopAppCountry', 'PrestashopAppLanguage',
     'PrestashopAppLanguage', 'PrestashopTax', 'PrestashopAppDefaultTax',
     'PrestashopApp2']
 __metaclass__ = PoolMeta
@@ -91,7 +91,7 @@ class PrestashopApp(ModelSQL, ModelView):
             cls.raise_user_error('connection_successfully')
 
     @classmethod
-    def core_store_website(self, app, prestashop_api):
+    def core_store_website(cls, app, client):
         '''
         Create website and sale shop
         return list website ids
@@ -103,33 +103,32 @@ class PrestashopApp(ModelSQL, ModelView):
 
         sale_configuration = SaleShop.sale_configuration()
         if not sale_configuration.sale_warehouse:
-             self.raise_user_error('sale_configuration')
+            cls.raise_user_error('sale_configuration')
 
         websites = []
-        # TODO: call multistore prestashop
-        for ptswebsite in prestashop_api.call('ol_websites.list', []):
-            website_ref = PrestashopExternalReferential.get_pts2try(app, 
-                'prestashop.website', ptswebsite['website_id'])
+        for prestashop in client.shops.get_list(display='full'):
+            website_ref = PrestashopExternalReferential.get_pts2try(app,
+                'prestashop.website', prestashop.id.pyval)
 
             if not website_ref:
                 values = {
-                    'name': ptswebsite['name'],
-                    'code': ptswebsite['code'],
+                    'name': prestashop.name.pyval,
                     'prestashop_app': app.id,
-                }
+                    }
                 website = PrestashopWebsite.create([values])[0]
                 websites.append(website)
                 PrestashopExternalReferential.set_external_referential(app,
-                    'prestashop.website', website.id, ptswebsite['website_id'])
+                    'prestashop.website', website.id, prestashop.id.pyval)
                 logging.getLogger('prestashop').info(
-                    'Create Website. Prestashop APP: %s. Prestashop website ID %s' % (
-                    app.name,
-                    ptswebsite['website_id'],
-                    ))
+                    'Create Website. Prestashop APP: %s. '
+                    'Prestashop website ID %s' % (
+                        app.name,
+                        prestashop.id.pyval,
+                        ))
 
-                """Sale Shop"""
+                '''Sale Shop'''
                 values = {
-                    'name': ptswebsite['name'],
+                    'name': prestashop.name.pyval,
                     'warehouse': sale_configuration.sale_warehouse.id,
                     'price_list': sale_configuration.sale_price_list.id,
                     'esale_available': True,
@@ -145,38 +144,36 @@ class PrestashopApp(ModelSQL, ModelView):
                 }
                 shop = SaleShop.create([values])[0]
                 PrestashopExternalReferential.set_external_referential(app,
-                    'sale.shop', shop.id, ptswebsite['website_id'])
+                    'sale.shop', shop.id, website.id)
                 logging.getLogger('prestashop').info(
-                    'Create Sale Shop. Prestashop APP: %s. Website %s - %s. ' \
+                    'Create Sale Shop. Prestashop APP: %s. Website %s - %s. '
                     'Sale Shop ID %s' % (
-                    app.name,
-                    website.id,
-                    ptswebsite['website_id'],
-                    shop.id,
-                    ))
+                        app.name,
+                        website.id,
+                        prestashop.id.pyval,
+                        shop.id,
+                        ))
             else:
                 logging.getLogger('prestashop').warning(
-                    'Website exists. Prestashop APP: %s. Prestashop Website ID: %s. ' \
+                    'Website exists. Prestashop APP: %s. '
+                    'Prestashop Website ID: %s. '
                     'Not create' % (
-                    app.name,
-                    ptswebsite['website_id'],
-                    ))
+                        app.name,
+                        prestashop.id.pyval,
+                        ))
         return websites
 
     @classmethod
     @ModelView.button
     def core_store(self, apps):
-        """Import Store Prestashop to Tryton
-        Create new values if not exist; not update or delete
+        '''Import Store Prestashop to Tryton
+        Create new stores; not update or delete
         - Websites
-        - Store Group / Tryton Sale Shop
-        - Store View
-        """
-
+        - Languages
+        '''
         for app in apps:
-            # TODO: call multistore desing prestashop and create a new website related
-            # to sale shop
-            self.core_store_website(app, prestashop_api)
+            client = app.get_prestashop_client()
+            self.core_store_website(app, client)
 
     @classmethod
     @ModelView.button
@@ -284,7 +281,6 @@ class PrestashopWebsite(ModelSQL, ModelView):
     'Prestashop Website'
     __name__ = 'prestashop.website'
     name = fields.Char('Name', required=True)
-    code = fields.Char('Code', required=True)
     prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
         required=True)
     sale_shop = fields.One2Many('sale.shop', 'prestashop_website', 'Sale Shop')

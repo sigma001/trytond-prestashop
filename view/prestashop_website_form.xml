@@ -4,8 +4,6 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
 <form string="Prestashop Website" col="4">
     <label name="name"/>
     <field name="name"/>
-    <label name="code"/>
-    <field name="code"/>
     <label name="prestashop_app"/>
     <field name="prestashop_app"/>
     <field name="sale_shop" colspan="4"/>

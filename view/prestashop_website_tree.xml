@@ -3,6 +3,5 @@
 The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
 <tree string="Prestashop Website">
     <field name="prestashop_app"/>
-    <field name="code"/>
     <field name="name"/>
 </tree>
