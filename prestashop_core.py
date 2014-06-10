@@ -8,11 +8,11 @@ from requests import exceptions
 
 import logging
 
-__all__ = ['PrestashopApp','PrestashopWebsite', 
+__all__ = ['PrestashopApp', 'PrestashopWebsite', 'PrestashopWebsiteLanguage',
     'PrestashopCustomerGroup','PrestashopRegion',
     'PrestashopAppCustomer','PrestashopShopStatus',
     'PrestashopAppCountry', 'PrestashopAppLanguage',
-    'PrestashopAppLanguage', 'PrestashopTax', 'PrestashopAppDefaultTax',
+    'PrestashopTax', 'PrestashopAppDefaultTax',
     'PrestashopApp2']
 __metaclass__ = PoolMeta
 
@@ -286,6 +286,14 @@ class PrestashopWebsite(ModelSQL, ModelView):
     sale_shop = fields.One2Many('sale.shop', 'prestashop_website', 'Sale Shop')
 
 
+class PrestashopWebsiteLanguage(ModelSQL, ModelView):
+    'Prestashop Website Languages'
+    __name__ = 'prestashop.website.language'
+    name = fields.Char('Name', required=True)
+    code = fields.Char('Code', required=True)
+    prestashop_website = fields.Many2One('prestashop.website', 'Prestashop Website')
+
+
 class PrestashopCustomerGroup(ModelSQL, ModelView):
     'Prestashop Customer Group'
     __name__ = 'prestashop.customer.group'
@@ -352,6 +360,9 @@ class PrestashopAppLanguage(ModelSQL, ModelView):
     app = fields.Many2One('prestashop.app', 'Prestashop APP', ondelete='CASCADE',
             select=True, required=True)
     lang = fields.Many2One('ir.lang', 'Language', required=True)
+    website_language = fields.Many2One('prestashop.website.language', 'Website Language', required=True,
+        domain=[('prestashop_website.prestashop_app', '=', Eval('app'))],
+        depends=['app'])
     default = fields.Boolean('Default',
         help='Language is default Language in Prestashop')
 

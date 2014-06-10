@@ -78,6 +78,42 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
         <menuitem parent="menu_prestashop_app_form" action="act_prestashop_website_form"
             id="menu_prestashop_website_form" sequence="10"/>
 
+        <!--Prestashop Website Language -->
+        <record model="ir.ui.view" id="prestashop_website_language_form">
+            <field name="model">prestashop.website.language</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_website_language_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_website_language_tree">
+            <field name="model">prestashop.website.language</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_website_language_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_website_language">
+            <field name="model" search="[('model', '=', 'prestashop.website.language')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_website_language_form">
+            <field name="name">Prestashop Website Languages</field>
+            <field name="res_model">prestashop.website.language</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_website_language_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_website_language_tree"/>
+            <field name="act_window" ref="act_prestashop_website_language_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_website_language_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_website_language_form"/>
+            <field name="act_window" ref="act_prestashop_website_language_form"/>
+        </record>
+        <menuitem parent="menu_prestashop_app_form" action="act_prestashop_website_language_form"
+            id="menu_prestashop_website_language_form" sequence="10"/>
+
         <!--Prestashop Region -->
         <record model="ir.ui.view" id="prestashop_region_form">
             <field name="model">prestashop.region</field>

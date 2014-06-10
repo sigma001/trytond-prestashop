@@ -11,12 +11,12 @@ def register():
     Pool.register(
         PrestashopApp,
         PrestashopWebsite,
+        PrestashopWebsiteLanguage,
         PrestashopCustomerGroup,
         PrestashopRegion,
         PrestashopAppCustomer,
         PrestashopShopStatus,
         PrestashopAppCountry,
-        PrestashopAppLanguage,
         PrestashopAppLanguage,
         PrestashopApp2,
         PrestashopExternalReferential,

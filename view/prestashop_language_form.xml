@@ -4,6 +4,8 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
 <form string="Prestashop Language">
     <label name="lang"/>
     <field name="lang"/>
+    <label name="website_language"/>
+    <field name="website_language"/>
     <label name="default"/>
     <field name="default"/>
     <label name="app"/>
