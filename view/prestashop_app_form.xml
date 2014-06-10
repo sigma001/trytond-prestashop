@@ -18,10 +18,8 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
         <page string="Authentication" id="authentication">
             <label name="uri"/>
             <field name="uri" colspan="3"/>
-            <label name="username"/>
-            <field name="username"/>
-            <label name="password"/>
-            <field name="password" widget="password"/>
+            <label name="key"/>
+            <field name="key" widget="password"/>
             <button name="test_connection" string="Test Connection" colspan="4"/>
         </page>
         <page string="Import" id="import">

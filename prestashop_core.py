@@ -4,6 +4,7 @@
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval
+from requests import exceptions
 
 import logging
 
@@ -16,7 +17,7 @@ __all__ = ['PrestashopApp','PrestashopWebsite',
 __metaclass__ = PoolMeta
 
 try:
-    from pystashop import PrestaShopWebservice
+    from pystashop import PrestaShopWebservice, PrestaShopWebserviceException
 except ImportError:
     message = 'Unable to import Prestashop: pip install pystashop'
     logging.getLogger('prestashop').error(message)
@@ -29,8 +30,7 @@ class PrestashopApp(ModelSQL, ModelView):
     name = fields.Char('Name', required=True)
     uri = fields.Char('URI', required=True,
         help='URI Prestashop App. http://yourprestashop.com/ (with / at end)')
-    username = fields.Char('Username', required=True)
-    password = fields.Char('Password', required=True)
+    key = fields.Char('Key', required=True)
     prestashop_websites = fields.One2Many('prestashop.website', 'prestashop_app',
         'Websites', readonly=True)
     prestashop_countries = fields.Many2Many('prestashop.app-country.country', 
@@ -52,11 +52,13 @@ class PrestashopApp(ModelSQL, ModelView):
     def __setup__(cls):
         super(PrestashopApp, cls).__setup__()
         cls._error_messages.update({
-            'connection_successfully': 'Prestashop connection are successfully!',
-            'connection_website': 'Prestashop connection are successfully but ' \
-                'you need configure your Prestashop first',
+            'connection_successfully': 'Successfully Prestashop connection!',
+            'connection_website': 'Successfully Prestashop connection '
+                'but you need to configure your Prestashop first.',
             'connection_error': 'Prestashop connection failed!',
             'sale_configuration': 'Add default values in configuration sale!',
+            'wrong_url_n_key': 'Connection Failed! Please check URL and Key.',
+            'wrong_url': 'Connection Failed! The URL provided is wrong.',
         })
         cls._buttons.update({
                 'test_connection': {},
@@ -65,13 +67,28 @@ class PrestashopApp(ModelSQL, ModelView):
                 'core_regions': {},
                 })
 
+    def get_prestashop_client(self):
+        '''Authenticated Prestashop client
+
+        :return: object
+        '''
+        if not all([self.uri, self.key]):
+            self.raise_user_error('prestashop_settings_missing')
+        return PrestaShopWebservice(self.uri, self.key)
+
     @classmethod
     @ModelView.button
-    def test_connection(self, apps):
-        """Test connection to Prestashop APP"""
+    def test_connection(cls, apps):
+        '''Test connection to Prestashop APP'''
         for app in apps:
-            with API(app.uri, app.username, app.password):
-                self.raise_user_error('connection_successfully')
+            try:
+                client = app.get_prestashop_client()
+                client.shops.get_list()
+            except PrestaShopWebserviceException:
+                cls.raise_user_error('wrong_url_n_key')
+            except (exceptions.MissingSchema, exceptions.ConnectionError):
+                cls.raise_user_error('wrong_url')
+            cls.raise_user_error('connection_successfully')
 
     @classmethod
     def core_store_website(self, app, prestashop_api):
