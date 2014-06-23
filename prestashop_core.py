@@ -163,16 +163,40 @@ class PrestashopApp(ModelSQL, ModelView):
         return websites
 
     @classmethod
+    def core_store_website_language(cls, websites, client):
+        pool = Pool()
+        WebsiteLanguage = pool.get('prestashop.website.language')
+        languages = client.languages.get_list(display='full')
+        website_languages = WebsiteLanguage.search([
+                ('prestashop_website', 'in', websites),
+                ])
+        langs = [wl.prestashop_id for wl in website_languages]
+        values = [{
+                'prestashop_id': l.id.pyval,
+                'name': l.name.pyval,
+                'code': l.language_code.pyval,
+                'prestashop_website': w.id,
+                }
+            for l in languages
+            for w in websites
+            if (l.id.pyval not in langs)
+            ]
+        WebsiteLanguage.create(values)
+
+    @classmethod
     @ModelView.button
-    def core_store(self, apps):
-        '''Import Store Prestashop to Tryton
+    def core_store(cls, apps):
+        '''
+        Import Store Prestashop to Tryton
         Create new stores; not update or delete
         - Websites
         - Languages
         '''
+        websites = []
         for app in apps:
             client = app.get_prestashop_client()
-            self.core_store_website(app, client)
+            websites.extend(cls.core_store_website(app, client))
+        cls.core_store_website_language(websites, client)
 
     @classmethod
     @ModelView.button
@@ -291,6 +315,7 @@ class PrestashopWebsiteLanguage(ModelSQL, ModelView):
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
     prestashop_website = fields.Many2One('prestashop.website', 'Prestashop Website')
+    prestashop_id = fields.Integer("Prestashop ID")
 
 
 class PrestashopCustomerGroup(ModelSQL, ModelView):
