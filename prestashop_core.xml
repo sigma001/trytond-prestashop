@@ -198,7 +198,7 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
             <field name="perm_delete" eval="False"/>
         </record>
         <record model="ir.action.act_window" id="act_prestashop_customer_group_form">
-            <field name="name">Prestashop Customer Group</field>
+            <field name="name">Prestashop Customer Groups</field>
             <field name="res_model">prestashop.customer.group</field>
         </record>
         <record model="ir.action.act_window.view" id="act_prestashop_customer_group_form_view1">
