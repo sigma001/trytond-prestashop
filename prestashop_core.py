@@ -200,50 +200,55 @@ class PrestashopApp(ModelSQL, ModelView):
 
     @classmethod
     @ModelView.button
-    def core_customer_group(self, apps):
-        """Import Prestashop Group to Tryton
+    def core_customer_group(cls, apps):
+        '''Import Prestashop Group to Tryton
         Only create new values if not exist; not update or delete
-        """
+        '''
         pool = Pool()
-        PrestashopExternalReferential = pool.get('prestashop.external.referential')
-        PrestashopCustomerGroup = pool.get('prestashop.customer.group')
+        PrestashopAppLanguage = pool.get('prestashop.app.language')
+        ExternalReferential = pool.get('prestashop.external.referential')
+        CustomerGroup = pool.get('prestashop.customer.group')
 
         for app in apps:
-            # TODO: call prestashop groups
-            with CustomerGroup(app.uri,app.username,app.password) as \
-                    customer_group_api:
-                for customer_group in customer_group_api.list():
-                    groups = PrestashopCustomerGroup.search([
-                        ('customer_group', '=', customer_group[
-                                'customer_group_id'
-                                ]),
-                        ('prestashop_app', '=', app.id),
-                        ], limit=1)
-                    if groups:
-                        logging.getLogger('prestashop').warning(
-                            'Group %s already exists. Prestashop APP: %s: ' + \
-                            'Not created' % (
-                            customer_group['customer_group_code'],
-                            app.name,
-                            ))
-                        continue
+            langs = PrestashopAppLanguage.search([('default', '=', True)])
+            if not langs:
+                logging.getLogger('prestashop').error(
+                    'Configure Prestashop %s APP Languages' % (app.name))
+                continue
 
-                    values = {
-                        'name': customer_group['customer_group_code'],
-                        'customer_group': customer_group['customer_group_id'],
-                        'prestashop_app': app.id,
+            lang = langs[0].website_language.prestashop_id
+        
+            client = app.get_prestashop_client()
+            prestashop_groups = client.groups.get_list(display='full')
+            customer_groups = CustomerGroup.search([
+                    ('prestashop_app', '=', app.id),
+                    ])
+            customer_groups = [cg.customer_group for cg in customer_groups]
+            values = [{
+                    'name': g.name.language[lang].pyval,
+                    'customer_group': g.id.pyval,
+                    'prestashop_app': app.id,
                     }
-                    prestashop_customer_group = PrestashopCustomerGroup.create([values])[0]
-                    PrestashopExternalReferential.set_external_referential(
-                        app,
-                        'prestashop.customer.group',
-                        prestashop_customer_group.id,
-                        customer_group['customer_group_id'])
-                    logging.getLogger('prestashop').info(
-                        'Create Group %s. Prestashop APP %s.ID %s' % (
-                        customer_group['customer_group_code'],
-                        app.name, 
-                        prestashop_customer_group,
+                for g in prestashop_groups
+                if g.id.pyval not in customer_groups
+                ]
+            customer_groups = CustomerGroup.create(values)
+            prestashop_groups = {g.id: p.id.pyval
+                for g in customer_groups
+                for p in prestashop_groups
+                if g.customer_group == p.id.pyval
+                }
+            for customer_group in customer_groups:
+                ExternalReferential.set_external_referential(
+                    app,
+                    'prestashop.customer.group',
+                    customer_group.id,
+                    prestashop_groups[customer_group.id])
+                logging.getLogger('prestashop').info(
+                    'Create Group %s. Prestashop APP %s.ID %s' % (
+                        prestashop_groups[customer_group.id],
+                        app.name,
+                        customer_group.id,
                         ))
 
     @classmethod
