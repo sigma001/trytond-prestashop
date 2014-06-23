@@ -43,21 +43,21 @@ class SaleShop:
         return res
 
     @classmethod
-    def get_prestashop_region(cls, region):
+    def get_prestashop_state(cls, state):
         '''Get subdivision (prestashop to tryton)'''
         pool = Pool()
-        PrestashopRegion = pool.get('prestashop.region')
+        PrestashopState = pool.get('prestashop.state')
 
         subdivision = None
-        if not region:
+        if not state:
             return subdivision
 
-        regions = PrestashopRegion.search([
-                    ('region_id', '=', region),
+        states = PrestashopState.search([
+                    ('state_id', '=', state),
                     ], limit=1)
-        if regions:
-            region, = regions
-            subdivision = region.subdivision
+        if states:
+            state, = states
+            subdivision = state.subdivision
         return subdivision
 
     @classmethod
@@ -265,13 +265,13 @@ class SaleShop:
             vals['vat_country'] = shipping.get('country_id')
 
         # Add customer/supplier tax rule
-        # 1. Search Tax Rule from Billing Address Region ID
+        # 1. Search Tax Rule from Billing Address State ID
         # 2. Search Tax Rule from Billing Address Post Code
         # 3. Search Tax Tule from Billing Address Country ID
         tax_rule = None
         taxe_rules = eSaleAccountTaxRule.search([])
 
-        subdivision = self.get_prestashop_region(billing.get('region_id'))
+        subdivision = self.get_prestashop_state(billing.get('state_id'))
         if subdivision:
             tax_rules = eSaleAccountTaxRule.search([
                 ('subdivision', '=', subdivision),
@@ -331,7 +331,7 @@ class SaleShop:
             'street': remove_newlines(unaccent(billing.get('street')).title()),
             'zip': billing.get('postcode'),
             'city': unaccent(billing.get('city')).title(),
-            'subdivision': self.get_prestashop_region(billing.get('region_id')),
+            'subdivision': self.get_prestashop_state(billing.get('state_id')),
             'country': billing.get('country_id'),
             'phone': billing.get('telephone'),
             'email': email,
@@ -363,7 +363,7 @@ class SaleShop:
             'street': remove_newlines(unaccent(shipment.get('street')).title()),
             'zip': shipment.get('postcode'),
             'city': unaccent(shipment.get('city')).title(),
-            'subdivision': self.get_prestashop_region(shipment.get('region_id')),
+            'subdivision': self.get_prestashop_state(shipment.get('state_id')),
             'country': shipment.get('country_id'),
             'phone': shipment.get('telephone'),
             'email': email,

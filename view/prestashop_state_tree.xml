@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!-- This file is part prestashop module for Tryton.
 The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
-<tree string="Prestashop Region">
+<tree string="Prestashop State">
     <field name="prestashop_app"/>
     <field name="subdivision"/>
     <field name="name"/>
     <field name="code"/>
-    <field name="region_id"/>
+    <field name="state_id"/>
 </tree>

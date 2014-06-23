@@ -13,7 +13,7 @@ def register():
         PrestashopWebsite,
         PrestashopWebsiteLanguage,
         PrestashopCustomerGroup,
-        PrestashopRegion,
+        PrestashopState,
         PrestashopAppCustomer,
         PrestashopShopStatus,
         PrestashopAppCountry,

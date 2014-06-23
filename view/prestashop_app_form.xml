@@ -31,9 +31,7 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
         <page string="Countries" id="countries">
             <separator string="Countries" colspan="4" id="countries"/>
             <field name="prestashop_countries" colspan="4"/>
-            <button name="core_regions" string="Import Regions" colspan="4"/>
-            <separator string="Regions" colspan="4" id="regions"/>
-            <field name="prestashop_regions" colspan="4"/>
+            <button name="core_states" string="Import States" colspan="4"/>
         </page>
     </notebook>
     <notebook>

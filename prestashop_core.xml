@@ -114,41 +114,41 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
         <menuitem parent="menu_prestashop_app_form" action="act_prestashop_website_language_form"
             id="menu_prestashop_website_language_form" sequence="10"/>
 
-        <!--Prestashop Region -->
-        <record model="ir.ui.view" id="prestashop_region_form">
-            <field name="model">prestashop.region</field>
+        <!--Prestashop State -->
+        <record model="ir.ui.view" id="prestashop_state_form">
+            <field name="model">prestashop.state</field>
             <field name="type">form</field>
-            <field name="name">prestashop_region_form</field>
+            <field name="name">prestashop_state_form</field>
         </record>
-        <record model="ir.ui.view" id="prestashop_region_tree">
-            <field name="model">prestashop.region</field>
+        <record model="ir.ui.view" id="prestashop_state_tree">
+            <field name="model">prestashop.state</field>
             <field name="type">tree</field>
-            <field name="name">prestashop_region_tree</field>
+            <field name="name">prestashop_state_tree</field>
         </record>
 
-        <record model="ir.model.access" id="access_prestashop_region">
-            <field name="model" search="[('model', '=', 'prestashop.region')]"/>
+        <record model="ir.model.access" id="access_prestashop_state">
+            <field name="model" search="[('model', '=', 'prestashop.state')]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_delete" eval="False"/>
         </record>
-        <record model="ir.action.act_window" id="act_prestashop_region_form">
-            <field name="name">Prestashop Region</field>
-            <field name="res_model">prestashop.region</field>
+        <record model="ir.action.act_window" id="act_prestashop_state_form">
+            <field name="name">Prestashop States</field>
+            <field name="res_model">prestashop.state</field>
         </record>
-        <record model="ir.action.act_window.view" id="act_prestashop_region_form_view1">
+        <record model="ir.action.act_window.view" id="act_prestashop_state_form_view1">
             <field name="sequence" eval="10"/>
-            <field name="view" ref="prestashop_region_tree"/>
-            <field name="act_window" ref="act_prestashop_region_form"/>
+            <field name="view" ref="prestashop_state_tree"/>
+            <field name="act_window" ref="act_prestashop_state_form"/>
         </record>
-        <record model="ir.action.act_window.view" id="act_prestashop_region_form_view2">
+        <record model="ir.action.act_window.view" id="act_prestashop_state_form_view2">
             <field name="sequence" eval="20"/>
-            <field name="view" ref="prestashop_region_form"/>
-            <field name="act_window" ref="act_prestashop_region_form"/>
+            <field name="view" ref="prestashop_state_form"/>
+            <field name="act_window" ref="act_prestashop_state_form"/>
         </record>
-        <menuitem parent="menu_prestashop" action="act_prestashop_region_form"
-            id="menu_prestashop_region_form" sequence="10"/>
+        <menuitem parent="menu_prestashop" action="act_prestashop_state_form"
+            id="menu_prestashop_state_form" sequence="10"/>
 
         <!--Prestashop APP Customer -->
         <record model="ir.model.access" id="access_prestashop_app_customer">

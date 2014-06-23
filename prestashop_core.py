@@ -9,8 +9,8 @@ from requests import exceptions
 import logging
 
 __all__ = ['PrestashopApp', 'PrestashopWebsite', 'PrestashopWebsiteLanguage',
-    'PrestashopCustomerGroup','PrestashopRegion',
-    'PrestashopAppCustomer','PrestashopShopStatus',
+    'PrestashopCustomerGroup', 'PrestashopState',
+    'PrestashopAppCustomer', 'PrestashopShopStatus',
     'PrestashopAppCountry', 'PrestashopAppLanguage',
     'PrestashopTax', 'PrestashopAppDefaultTax',
     'PrestashopApp2']
@@ -35,8 +35,8 @@ class PrestashopApp(ModelSQL, ModelView):
         'Websites', readonly=True)
     prestashop_countries = fields.Many2Many('prestashop.app-country.country', 
         'app', 'country', 'Countries')
-    prestashop_regions = fields.One2Many('prestashop.region', 'prestashop_app',
-        'Regions', readonly=True)
+    prestashop_states = fields.One2Many('prestashop.state', 'prestashop_app',
+        'States', readonly=True)
     product_options = fields.Boolean('Product Options',
         help='Orders with product options. Split reference order line by "-"')
     prestashop_taxes = fields.One2Many('prestashop.tax', 'prestashop_app',
@@ -64,7 +64,7 @@ class PrestashopApp(ModelSQL, ModelView):
                 'test_connection': {},
                 'core_store': {},
                 'core_customer_group': {},
-                'core_regions': {},
+                'core_states': {},
                 })
 
     def get_prestashop_client(self):
@@ -253,56 +253,72 @@ class PrestashopApp(ModelSQL, ModelView):
 
     @classmethod
     @ModelView.button
-    def core_regions(self, apps):
-        """Import Prestashop Regions to Tryton
+    def core_states(self, apps):
+        """Import Prestashop States to Tryton
         Only create new values if not exist; not update or delete
         """
         pool = Pool()
-        PrestashopRegion = pool.get('prestashop.region')
+        PrestashopState = pool.get('prestashop.state')
         CountrySubdivision = pool.get('country.subdivision')
 
         for app in apps:
-            # TODO: call regions prestashop
-            with Region(app.uri,app.username,app.password) as region_api:
-                countries = app.prestashop_countries
-                if not countries:
-                    logging.getLogger('prestashop').warning('Select a countries to ' \
-                        'load regions')
-                    return None
+            to_create = []
+            if not app.prestashop_countries:
+                logging.getLogger('prestashop').info(
+                    'Add some countries to import Prestahop States')
+                continue
 
-                for country in countries:
-                    regions = region_api.list(country.code)
-                    for region in regions:
-                        mag_regions = PrestashopRegion.search([
-                            ('region_id','=',region['region_id']),
-                            ('prestashop_app','=',app.id)
-                            ], limit=1)
-                        if not mag_regions: #not exists
-                            subdivisions = CountrySubdivision.search([
-                                ('name','ilike',region['code'])
-                                ], limit=1)
-                            values = {}
-                            if subdivisions:
-                                values['subdivision'] = subdivisions[0]
-                            values['prestashop_app'] = app.id
-                            values['code'] = region['code']
-                            values['region_id'] = region['region_id']
-                            values['name'] = region['name'] and \
-                                    region['name'] or region['code']
-                            mregion = PrestashopRegion.create([values])[0]
-                            logging.getLogger('prestashop').info(
-                                'Create region %s. Prestashop APP %s. ID %s' % (
-                                region['region_id'],
-                                app.name, 
-                                mregion,
-                                ))
-                        else:
-                            logging.getLogger('prestashop').warning(
-                                'Region %s already exists. Prestashop %s. ' \
-                                'Not created' % (
-                                app.name, 
-                                region['region_id'],
-                                ))
+            client = app.get_prestashop_client()
+
+            codes = []
+            for country in app.prestashop_countries:
+                codes.append(country.code)
+
+            countries = client.countries.get_list(
+                filters={'iso_code': '|'.join(codes)},
+                display='full')
+            if not countries:
+                logging.getLogger('prestashop').info(
+                    'Not found countries with code %s in Prestashop' % codes)
+                continue
+
+            countries_ids = [str(c.id) for c in countries]
+            states = client.states.get_list(
+                filters={'id_country': '|'.join(countries_ids)},
+                display='full')
+
+            for state in states:
+                state_id = state.id.pyval
+                state_name = state.name.pyval
+                state_code = state.iso_code.pyval
+
+                pst_states = PrestashopState.search([
+                    ('state_id','=', state_id),
+                    ('prestashop_app','=', app.id)
+                    ], limit=1)
+                if pst_states:
+                    logging.getLogger('prestashop').warning(
+                        'Prestashop %s. State %s already exists.' % (
+                            app.name, state_name))
+                    continue
+
+                subdivisions = CountrySubdivision.search([
+                    ('code', '=', state_code)
+                    ], limit=1)
+                values = {}
+                if subdivisions:
+                    values['subdivision'] = subdivisions[0]
+                values['prestashop_app'] = app.id
+                values['code'] = state_code
+                values['state_id'] = state_id
+                values['name'] = state_name
+                to_create.append(values)
+
+            if to_create:
+                PrestashopState.create(to_create)
+                logging.getLogger('prestashop').info(
+                    'Prestashop APP %s. Create total %s states' % (
+                    app.name, len(to_create)))
 
 
 class PrestashopWebsite(ModelSQL, ModelView):
@@ -332,15 +348,15 @@ class PrestashopCustomerGroup(ModelSQL, ModelView):
     prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', readonly=True)
 
 
-class PrestashopRegion(ModelSQL, ModelView):
-    'Prestashop Region'
-    __name__ = 'prestashop.region'
-    name = fields.Char('Name', readonly=True) #Available in prestashop and Null
+class PrestashopState(ModelSQL, ModelView):
+    'Prestashop State'
+    __name__ = 'prestashop.state'
+    name = fields.Char('Name', readonly=True)
     prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
         required=True, readonly=True)
     subdivision = fields.Many2One('country.subdivision', 'Subdivision')
     code = fields.Char('Code', required=True, readonly=True)
-    region_id = fields.Integer('Region ID', required=True, readonly=True)
+    state_id = fields.Integer('State ID', required=True, readonly=True)
 
 
 class PrestashopAppCustomer(ModelSQL, ModelView):
