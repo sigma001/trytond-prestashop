@@ -165,7 +165,7 @@ un servidor Prestashop en el ERP. Para configurar el servidor de Prestashop acce
 
   * Países: Países que queremos importar regiones de Prestashop para los pedidos
     de venta.
-  * Regiones: Asocia las regiones de Prestashop con las subdivisiones de Tryton.
+  * Provincias: Asocia las provincias de Prestashop con las subdivisiones de Tryton.
   
 * Tiendas
 
