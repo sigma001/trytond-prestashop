@@ -6,13 +6,12 @@ from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 from trytond.modules.prestashop.tools import unaccent, party_name, \
-    remove_newlines, base_price_without_tax
-from pystashop import PrestaShopWebservice
+    remove_newlines, postcode_len
 from decimal import Decimal
+from datetime import datetime
 
 import logging
 import threading
-import datetime
 
 __all__ = ['SaleShop']
 __metaclass__ = PoolMeta
@@ -87,11 +86,11 @@ class SaleShop:
         SaleShop = pool.get('sale.shop')
 
         ptsapp = self.prestashop_website.prestashop_app
-        now = datetime.datetime.now()
+        now = datetime.now()
 
         if not ofilter:
             from_time = SaleShop.datetime_to_str(self.esale_from_orders or now)
-            if shop.esale_to_orders:
+            if self.esale_to_orders:
                 to_time = SaleShop.datetime_to_str(self.esale_to_orders)
             else:
                 to_time = SaleShop.datetime_to_str(now)
@@ -101,7 +100,12 @@ class SaleShop:
             created_filter['to'] = to_time
             ofilter = {'created_at': created_filter}
 
-        # TODO: Call Import Prestashop orders
+        client = ptsapp.get_prestashop_client()
+        orders = client.orders.get_list(
+            filters={
+                'date_upd': '{0},{1}'.format(from_time, to_time)
+                }, date=1, display='full',
+            )
 
         #~ Update date last import
         self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
@@ -122,147 +126,131 @@ class SaleShop:
             thread1.start()
 
     @classmethod
-    def pts2order_values(self, shop, values):
+    def pts2order_values(self, shop, values, currencies, carriers):
         """
-        Convert prestashop values to sale
+        Convert prestashop order values to sale
+
         :param shop: obj
-        :param values: dict
+        :param values: xml obj
+        :param currencies: xml obj
+        :param carriers: xml obj
         return dict
         """
-        comment = values.get('customer_note')
-        if values.get('gift_message'):
-            comment = '%s\n%s' % (values.get('customer_note'), values.get('gift_message'))
-
-        status_history = []
-        if values.get('status_history'):
-            for history in values['status_history']:
-                status_history.append('%s - %s - %s' % (
-                    str(history['created_at']), 
-                    str(history['status']), 
-                    str(unicode(history['comment']).encode('utf-8')),
-                    ))
-
-        payment_type = None
-        if 'method' in values.get('payment'):
-            payment_type = values.get('payment')['method']
+        untaxed_amount = Decimal(values.total_paid_tax_excl.pyval).quantize(Decimal('.01'))
+        total_amount = Decimal(values.total_paid_tax_incl.pyval).quantize(Decimal('.01'))
+        tax_amount = Decimal(total_amount-untaxed_amount).quantize(Decimal('.01'))
 
         vals = {
-            'reference_external': values.get('increment_id'),
-            'sale_date': values.get('created_at')[:10],
-            'carrier': values.get('shipping_method'),
-            'payment': payment_type,
-            'currency': values.get('order_currency_code'),
-            'comment': comment,
-            'status': values['status_history'][0]['status'],
-            'status_history': '\n'.join(status_history),
-            'external_untaxed_amount': Decimal(values.get('base_subtotal')),
-            'external_tax_amount': Decimal(values.get('base_tax_amount')),
-            'external_total_amount': Decimal(values.get('base_grand_total')),
-            'external_shipment_amount': Decimal(values.get('shipping_amount')),
-            'shipping_price': Decimal(values.get('shipping_amount')),
-            'shipping_note': values.get('shipping_description'),
-            'discount': Decimal(values.get('discount_amount'))
+            'party': values.id_customer.pyval,
+            'carrier': carriers.get(values.id_carrier.pyval),
+            'comment': values.gift_message.pyval,
+            'currency': currencies.get(values.id_currency.pyval),
+            'reference_external': values.reference.pyval,
+            'sale_date': datetime.strptime(values.date_add.pyval,
+                '%Y-%m-%d %H:%M:%S').date(),
+            'external_untaxed_amount': untaxed_amount,
+            'external_tax_amount': tax_amount,
+            'external_total_amount': total_amount,
+            'external_shipment_amount': values.total_shipping.pyval
+                and Decimal(values.total_shipping.pyval).quantize(
+                    Decimal('.01'))
+                or None,
+            'shipping_price': Decimal(values.total_shipping.pyval),
+            'shipping_note': None,
+            'discount': values.total_discounts.pyval
+                and Decimal(values.total_discounts.pyval)
+                or None,
+            'payment': values.payment.pyval,
+            'status': str(values.current_state.pyval),
             }
+        return vals
 
-        # fooman surchage extension
-        if values.get('fooman_surcharge_amount'):
-            surcharge = None
-            if values.get('base_fooman_surcharge_amount'):
-                surcharge = values.get('base_fooman_surcharge_amount')
-            elif values.get('fooman_surcharge_amount'):
-                surcharge = values.get('fooman_surcharge_amount')
-            surcharge = Decimal(surcharge)
-            if surcharge != 0.0000:
-                vals['surcharge'] = surcharge
+    @classmethod
+    def pts2lines_values(self, shop, values, products):
+        """
+        Convert prestashop values order lines to sale lines
+
+        :param shop: obj
+        :param values: xml obj
+        :param products: xml obj
+        return list(dict)
+        """
+        vals = []
+        sequence = 1
+
+        for order_row in values.associations.order_rows.iterchildren():
+            line = order_row
+            code = (line.product_id
+                and products[line.product_id.pyval]
+                or 'shop.%s,product.%s' % (shop.id, line.product_id.pyval))
+            price = Decimal(line.unit_price_tax_excl.pyval) # get price without tax
+
+            values = {
+                'product': code,
+                'quantity': Decimal(line.product_quantity.pyval),
+                'description': line.product_name.pyval,
+                'unit_price': price.quantize(Decimal('.01')),
+                'sequence': sequence,
+                }
+            vals.append(values)
+            sequence += 1
 
         return vals
 
     @classmethod
-    def pts2lines_values(self, shop, values):
-        """
-        Convert prestashop values to sale lines
-        :param shop: obj
-        :param values: dict
-        return list(dict)
-        """
-        Product = Pool().get('product.product')
-
-        app = shop.prestashop_website.prestashop_app
-        vals = []
-        sequence = 1
-        for item in values.get('items'):
-            if item['product_type'] not in PRODUCT_TYPE_OUT_ORDER_LINE:
-                code = item.get('sku')
-                price = Decimal(item.get('price'))
-
-                # Price include taxes. Calculate base price - without taxes
-                if shop.esale_tax_include:
-                    customer_taxes = None
-                    product = Product.search([('code', '=', code)], limit=1)
-                    if product:
-                        customer_taxes = product[0].template.customer_taxes_used
-                    if not product and app.default_taxes:
-                        customer_taxes = app.default_taxes
-                    if customer_taxes:
-                        rate = customer_taxes[0].rate
-                        price = Decimal(base_price_without_tax(price, rate))
-
-                values = {
-                    'quantity': Decimal(item.get('qty_ordered')),
-                    'description': item.get('description') or item.get('name'),
-                    'unit_price': price,
-                    'note': item.get('gift_message'),
-                    'sequence': sequence,
-                    }
-                if app.product_options and item.get('sku'):
-                    for sku in item['sku'].split('-'):
-                        values['product'] = sku
-                        vals.append(values)
-                else:
-                    values['product'] = item.get('sku')
-                    vals.append(values)
-                sequence += 1
-        return vals
-
     def pts2extralines_values(self, shop, values):
         """
         Convert prestashop values to extra sale lines
         Super this method if in your Prestashop there are extra lines to create
         in sale order
+
         :param shop: obj
-        :param values: dict
+        :param values: xml obj
         return list(dict)
         """
         return []
 
     @classmethod
-    def pts2party_values(self, shop, values):
+    def pts2party_values(self, shop, values, customers, invoice_addresses,
+            delivery_addresses, countries):
         """
         Convert prestashop values to party
+
         :param shop: obj
-        :param values: dict
+        :param values: xml obj
+        :param customers: xml obj
+        :param invoice_address: xml obj
+        :param delivery_addresses: xml obj
+        :param countries: xml obj
         return dict
         """
         pool = Pool()
         eSaleAccountTaxRule = pool.get('esale.account.tax.rule')
 
-        firstname = values.get('customer_firstname')
-        lastname = values.get('customer_lastname')
-        billing = values.get('billing_address')
-        shipping = values.get('shipping_address')
+        customer = customers.get(values.id_customer.pyval)
+        firstname = customer.firstname.pyval
+        lastname = customer.lastname.pyval
+        invoice = invoice_addresses.get(values.id_address_invoice.pyval)
+        delivery = delivery_addresses.get(values.id_address_delivery.pyval)
 
         vals = {
-            'name': unaccent(billing.get('company') and 
-                billing.get('company').title() or 
-                party_name(firstname, lastname)).title(),
-            'esale_email': values.get('customer_email'),
+            'name': unaccent(invoice.company.pyval
+                and invoice.company.pyval
+                or party_name(firstname, lastname)).title(),
+            'esale_email': customer.email.pyval,
             }
+        if invoice.vat_number.pyval:
+            vals['vat_number'] = '%s' % invoice.vat_number.pyval
+        elif delivery.vat_number.pyval:
+            vals['vat_number'] = '%s' % delivery.vat_number.pyval
 
-        vals['vat_number'] = values.get('customer_taxvat')
-        if billing:
-            vals['vat_country'] = billing.get('country_id')
-        else:
-            vals['vat_country'] = shipping.get('country_id')
+        country = None
+        if invoice.id_country:
+            country = countries.get(invoice.id_country.pyval)
+            vals['vat_country'] = country
+        elif delivery.id_country:
+            country = countries.get(delivery.id_country.pyval)
+            vals['vat_country'] = country
 
         # Add customer/supplier tax rule
         # 1. Search Tax Rule from Billing Address State ID
@@ -271,7 +259,7 @@ class SaleShop:
         tax_rule = None
         taxe_rules = eSaleAccountTaxRule.search([])
 
-        subdivision = self.get_prestashop_state(billing.get('state_id'))
+        subdivision = self.get_prestashop_state(invoice.id_state.pyval)
         if subdivision:
             tax_rules = eSaleAccountTaxRule.search([
                 ('subdivision', '=', subdivision),
@@ -279,7 +267,7 @@ class SaleShop:
             if tax_rules:
                 tax_rule, = tax_rules
 
-        postcode = billing.get('postcode')
+        postcode = invoice.postcode
         if postcode and not tax_rule:
             for tax in taxe_rules:
                 if not tax.start_zip or not tax.end_zip:
@@ -291,7 +279,6 @@ class SaleShop:
                 except:
                     break
 
-        country = billing.get('country_id')
         if country and not tax_rule:
             for tax in taxe_rules:
                 if tax.subdivision or tax.start_zip or tax.end_zip:
@@ -303,77 +290,85 @@ class SaleShop:
         if tax_rule:
             vals['customer_tax_rule'] = tax_rule.customer_tax_rule.id
             vals['supplier_tax_rule'] = tax_rule.supplier_tax_rule.id
-        # End add customer/supplier tax rule
+        #~ # End add customer/supplier tax rule
 
         return vals
 
     @classmethod
-    def pts2invoice_values(self, shop, values):
+    def pts2invoice_values(self, shop, values, customers, invoice_addresses, countries):
         """
         Convert prestashop values to invoice address
+
         :param shop: obj
-        :param values: dict
+        :param values: xml obj
+        :param customers: xml obj
+        :param invoice_addresses: xml obj
+        :param countries: xml obj
         return dict
         """
-        billing = values.get('billing_address')
 
-        name = party_name(values.get('customer_firstname'), 
-            values.get('customer_lastname'))
-        if billing.get('firstname'):
-            name = party_name(billing.get('firstname'), 
-                billing.get('lastname'))
+        invoice = invoice_addresses.get(values.id_address_invoice.pyval)
+        customer = customers.get(values.id_customer.pyval)
+        email = customer.email.pyval
+        name = party_name(invoice.firstname.pyval, invoice.lastname.pyval)
+        if not name:
+            name = party_name(customer.firstname.pyval, customer.lastname.pyval)
+        country = countries.get(invoice.id_country.pyval)
 
-        email = values.get('customer_email')
-        if billing.get('email') and not billing.get('email') != 'n/a@na.na':
-            email = values.get('customer_email')
         vals = {
             'name': unaccent(name).title(),
-            'street': remove_newlines(unaccent(billing.get('street')).title()),
-            'zip': billing.get('postcode'),
-            'city': unaccent(billing.get('city')).title(),
-            'subdivision': self.get_prestashop_state(billing.get('state_id')),
-            'country': billing.get('country_id'),
-            'phone': billing.get('telephone'),
+            'street': remove_newlines(unaccent(invoice.address1.pyval).title()),
+            'zip': '%s' % postcode_len(country, invoice.postcode),
+            'city': unaccent(invoice.city.pyval).title(),
+            'country': country,
+            'phone': '%s' % invoice.phone,
+            'fax': None,
             'email': email,
-            'fax': billing.get('fax'),
             'invoice': True,
             }
+
         return vals
 
     @classmethod
-    def pts2shipment_values(self, shop, values):
+    def pts2shipment_values(self, shop, values, customers, delivery_addresses, countries):
         """
         Convert prestashop values to shipment address
+
         :param shop: obj
-        :param values: dict
+        :param values: xml obj
+        :param customers: xml obj
+        :param delivery_addresses: xml obj
+        :param countries: xml obj
         return dict
         """
-        shipment = values.get('shipping_address')
 
-        name = party_name(values.get('customer_firstname'), 
-            values.get('customer_lastname'))
-        if shipment.get('firstname'):
-            name = party_name(shipment.get('firstname'), shipment.get('lastname'))
+        delivery = delivery_addresses.get(values.id_address_delivery.pyval)
+        customer = customers.get(values.id_customer.pyval)
+        email = customer.email.pyval
 
-        email = values.get('customer_email')
-        if shipment.get('email') and not shipment.get('email') != 'n/a@na.na':
-            email = values.get('customer_email')
+        name = party_name(delivery.firstname.pyval,
+            delivery.lastname.pyval)
+        if not name:
+            name = party_name(customer.firstname.pyval, customer.lastname.pyval)
+        country = countries.get(delivery.id_country.pyval)
+
         vals = {
             'name': unaccent(name).title(),
-            'street': remove_newlines(unaccent(shipment.get('street')).title()),
-            'zip': shipment.get('postcode'),
-            'city': unaccent(shipment.get('city')).title(),
-            'subdivision': self.get_prestashop_state(shipment.get('state_id')),
-            'country': shipment.get('country_id'),
-            'phone': shipment.get('telephone'),
+            'street': remove_newlines(unaccent(delivery.address1.pyval).title()),
+            'zip': '%s' % postcode_len(country, delivery.postcode),
+            'city': unaccent(delivery.city.pyval).title(),
+            'country': country,
+            'phone': '%s' % delivery.phone,
+            'fax': None,
             'email': email,
-            'fax': shipment.get('fax'),
             'delivery': True,
             }
+
         return vals
 
     def import_orders_prestashop_thread(self, db_name, user, shop, orders):
         """Create orders from Prestashop APP
+
         :param db_name: str
         :param user: int
         :param shop: int
@@ -387,8 +382,52 @@ class SaleShop:
             sale_shop, = SaleShop.browse([shop])
             ptsapp = sale_shop.prestashop_website.prestashop_app
 
+            client = ptsapp.get_prestashop_client()
+
+            lines = [r for o in orders
+                for r in o.associations.order_rows.iterchildren()]
+
+            product_ids = '|'.join({'%s' % l.product_id.pyval for l in lines})
+            products = client.products.get_list(
+                filters={'id': product_ids},
+                display=['id', 'reference'])
+            products = {p.id.pyval: p.reference.pyval for p in products}
+
+            customer_ids = '|'.join({'%s' % o.id_customer.pyval
+                    for o in orders})
+            customers = client.customers.get_list(
+                filters={'id': customer_ids},
+                display='full')
+            customers = {c.id.pyval: c for c in customers}
+
+            invoice_address_ids = '|'.join({'%s' % o.id_address_invoice.pyval
+                    for o in orders})
+            invoice_addresses = client.addresses.get_list(
+                filters={'id': invoice_address_ids},
+                display='full')
+            invoice_addresses = {a.id.pyval: a for a in invoice_addresses}
+
+            delivery_address_ids = '|'.join({'%s' % o.id_address_delivery.pyval
+                    for o in orders})
+            delivery_addresses = client.addresses.get_list(
+                filters={'id': delivery_address_ids},
+                display='full')
+            delivery_addresses = {a.id.pyval: a for a in delivery_addresses}
+
+            countries = client.countries.get_list(
+                display=['id', 'iso_code'])
+            countries = {c.id.pyval: c.iso_code.pyval for c in countries}
+
+            carriers = client.carriers.get_list(
+                display=['id', 'name'])
+            carriers = {c.id.pyval: c.name.pyval for c in carriers}
+
+            currencies = client.currencies.get_list(
+                display=['id', 'iso_code'])
+            currencies = {c.id.pyval: c.iso_code.pyval for c in currencies}
+
             for order in orders:
-                reference = order['increment_id']
+                reference = order.reference.pyval
 
                 sales = Sale.search([
                     ('reference_external', '=', reference),
@@ -397,23 +436,22 @@ class SaleShop:
 
                 if sales:
                     logging.getLogger('prestashop sale').warning(
-                        'Prestashop %s. Order %s exist (ID %s). Not imported' % (
-                        sale_shop.name, reference, sales[0].id))
+                        'Prestashop %s. Order %s exist (ID %s). Not imported'
+                        % (sale_shop.name, reference, sales[0].id))
                     continue
 
-                #Get details Prestashop order
-                # TODO Call info/detail prestashop order by reference. Example:
-                #~ values = order_api.info(reference)
+                # Convert Prestashop order to dict
+                sale_values = self.pts2order_values(sale_shop, order, currencies, carriers)
+                lines_values = self.pts2lines_values(sale_shop, order, products)
+                extralines_values = self.pts2extralines_values(sale_shop, order)
+                party_values = self.pts2party_values(sale_shop, order, customers,
+                    invoice_addresses, delivery_addresses, countries)
+                invoice_values = self.pts2invoice_values(sale_shop, order, customers,
+                    invoice_addresses, countries)
+                shipment_values = self.pts2shipment_values(sale_shop, order, customers,
+                    delivery_addresses, countries)
 
-                #Convert Prestashop order to dict
-                sale_values = self.pts2order_values(sale_shop, values)
-                lines_values = self.pts2lines_values(sale_shop, values)
-                extralines_values = self.pts2extralines_values(sale_shop, values)
-                party_values = self.pts2party_values(sale_shop, values)
-                invoice_values = self.pts2invoice_values(sale_shop, values)
-                shipment_values = self.pts2shipment_values(sale_shop, values)
-
-                #Create order, lines, party and address
+                # Create order, lines, party and address
                 Sale.create_external_order(sale_shop, sale_values, 
                     lines_values, extralines_values, party_values, 
                     invoice_values, shipment_values)
@@ -426,7 +464,7 @@ class SaleShop:
         """Export State sale to Prestashop
         :param shop: Obj
         """
-        now = datetime.datetime.now()
+        now = datetime.now()
         date = shop.esale_last_state_orders or now
 
         orders = self.get_sales_from_date(shop, date)
@@ -497,7 +535,7 @@ class SaleShop:
                         'status': status,
                         'status_history': '%s\n%s - %s' % (
                             sale.status_history,
-                            str(datetime.datetime.now()),
+                            str(datetime.now()),
                             status),
                         })
                     logging.getLogger('prestashop sale').info(

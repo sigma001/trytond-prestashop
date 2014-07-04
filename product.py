@@ -4,9 +4,6 @@
 from trytond.pool import Pool, PoolMeta
 from decimal import Decimal
 from trytond.modules.prestashop.tools import base_price_without_tax
-from pystashop import PrestaShopWebservice
-
-import logging
 
 __all__ = ['Product']
 __metaclass__ = PoolMeta
@@ -17,51 +14,88 @@ class Product:
 
     @classmethod
     def prestashop_template_dict2vals(self, shop, values):
-        '''
+        """
         Convert Prestashop values to Template
+
         :param shop: obj
-        :param values: dict from Prestashop Product API
+        :param values: xml obj
         return dict
-        '''
-        vals = {
-            'name': values.get('name'),
-            'list_price': Decimal(values.get('price')),
-            'cost_price': Decimal(values.get('price')),
-            'esale_shortdescription': values.get('short_description'),
-            'esale_slug': values.get('url_key'),
-            }
-        return vals
+        """
+        PrestashopAppLanguage = Pool().get('prestashop.app.language')
+
+        langs = PrestashopAppLanguage.search([('default', '=', True)])
+        if langs:
+            lang = langs[0].website_language.prestashop_id
+        else:
+            lang = 1 # Force lang ID 1
+
+        app = shop.prestashop_website.prestashop_app
+
+        default_tax = None
+        taxes = app.default_taxes
+        if taxes:
+            default_tax, = taxes
+
+        for value in values:
+            # calculate price without tax (first tax in default taxes app)
+            # because prestashop price is with tax and do not have
+            # price without taxes (calculate)
+            price = Decimal(value.price.pyval).quantize(Decimal('.01'))
+            if default_tax:
+                rate = default_tax.rate
+                price = base_price_without_tax(price, rate)
+
+            vals = {
+                'name': value.name.language[lang].pyval,
+                'list_price': price,
+                'cost_price': Decimal(
+                    value.wholesale_price.pyval).quantize(Decimal('.01')),
+                'esale_shortdescription':
+                    value.description_short.language[lang].pyval,
+                'esale_slug': value.link_rewrite.language[lang].pyval,
+                }
+            return vals
+        return {}
 
     @classmethod
     def prestashop_product_dict2vals(self, shop, values):
-        '''
+        """
         Convert Prestashop values to Product
+
         :param shop: obj
-        :param values: dict from Prestashop Product API
+        :param values: xml obj
         return dict
-        '''
-        vals = {
-            'code': values.get('sku'),
-            }
-        return vals
+        """
+        for value in values:
+            if value.reference.pyval:
+                vals = {
+                    'code': value.reference.pyval,
+                    }
+            else:
+                vals = {
+                    'code': '%s.%s' % (shop.id, value.id.pyval),
+                    }
+            return vals
+        return {}
 
     @classmethod
-    def prestashop_product_esale_saleshops(self, app, product_info):
-        '''
+    def prestashop_product_esale_saleshops(self, app, products):
+        """
         Get sale shops (websites)
-        :param app: object
-        :product_info: dict
+
+        :param app: obj
+        :param products: list
         return shops (list)
-        '''
+        """
         pool = Pool()
         PrestashopWebsite = pool.get('prestashop.website')
         PrestashopExternalReferential = pool.get('prestashop.external.referential')
 
         shops = []
         websites = []
-        for website in product_info.get('websites'):
-            website_ref = PrestashopExternalReferential.get_pts2try(app, 
-            'prestashop.website', website)
+        for product in products:
+            website_ref = PrestashopExternalReferential.get_pts2try(app,
+            'prestashop.website', product.id_shop_default.pyval)
             websites.append(website_ref.try_id)
         if websites:
             prestashop_websites = PrestashopWebsite.browse(websites)
@@ -71,13 +105,15 @@ class Product:
         return shops
 
     @classmethod
-    def prestashop_product_esale_taxes(self, app, product_info, tax_include=False):
-        '''
+    def prestashop_product_esale_taxes(self, app, products, tax_include=False):
+        """
         Get customer taxes and list price and cost price (with or without tax)
-        :param app: object
-        :product_info: dict
+
+        :param app: obj
+        :param products: list
+        :param tax_include: bool
         return customer_taxes (list), list_price, cost_price
-        '''
+        """
         pool = Pool()
         PrestashopTax = pool.get('prestashop.tax')
 
@@ -85,31 +121,32 @@ class Product:
         list_price = None
         cost_price = None
 
-        tax_id = product_info.get('tax_class_id')
-        if tax_id:
-            taxs = PrestashopTax.search([
-                ('prestashop_app', '=', app.id),
-                ('tax_id', '=', tax_id),
-                ], limit=1)
-            if taxs:
-                customer_taxes.append(taxs[0].tax.id)
+        for product in products:
+            tax_id = '%s' % product.id_tax_rules_group.pyval
+            if tax_id:
+                taxes = PrestashopTax.search([
+                    ('prestashop_app', '=', app.id),
+                    ('tax_id', '=', tax_id),
+                    ], limit=1)
+                if taxes:
+                    customer_taxes.append(taxes[0].tax.id)
+                    if tax_include:
+                        price = product.get('price')
+                        rate = taxes[0].tax.rate
+                        base_price = base_price_without_tax(price, rate)
+                        list_price = base_price
+                        cost_price = base_price
+
+            if not customer_taxes and app.default_taxes:
+                for tax in app.default_taxes:
+                    customer_taxes.append(tax.id)
                 if tax_include:
-                    price = product_info.get('price')
-                    rate = taxs[0].tax.rate
+                    # Get first tax to get base price -not all default taxes-
+                    price = Decimal(product.get('price'))
+                    rate = app.default_taxes[0].rate
                     base_price = base_price_without_tax(price, rate)
                     list_price = base_price
                     cost_price = base_price
-
-        if not customer_taxes and app.default_taxes:
-            for tax in app.default_taxes:
-                customer_taxes.append(tax.id)
-            if tax_include:
-                # Get first tax to get base price -not all default taxes-
-                price = Decimal(product_info.get('price'))
-                rate = app.default_taxes[0].rate
-                base_price = base_price_without_tax(price, rate)
-                list_price = base_price
-                cost_price = base_price
 
         return customer_taxes, list_price, cost_price
 
@@ -117,52 +154,43 @@ class Product:
     def create_product_prestashop(self, shop, code):
         '''
         Get Prestashop product info and create
+
         :param shop: obj
         :param code: str
         return obj
         '''
-        Template = Pool().get('product.template')
-        PrestashopExternalReferential = Pool().get('prestashop.external.referential')
+        pool = Pool()
+        Template = pool.get('product.template')
 
-        ptsapp = shop.prestashop_website.prestashop_app
+        prestashop_app = shop.prestashop_website.prestashop_app
+        client = prestashop_app.get_prestashop_client()
         tax_include = shop.esale_tax_include
 
-        # TODO: storeview is language. Get product default language
-        store_view = ptsapp.prestashop_default_storeview or None
-        if store_view:
-            pts_storeview = PrestashopExternalReferential.get_try2pts(ptsapp, 
-            'prestashop.storeview', store_view.id)
-            store_view = pts_storeview.pts_id
+        products = client.products.get_list(filters={'reference': code},
+            display='full')
+        if not products:
+            products = client.products.get_list(filters={
+                    'id': code.split(',')[1].split('.')[1]},
+                display='full')
 
-        if ptsapp.product_options:
-            codes = code.split('-')
-            if codes:
-                logging.getLogger('prestashop sale').warning(
-                    'Prestashop %s. Not split product %s' % (shop.name, code))
+        tvals = self.prestashop_template_dict2vals(shop, products)
+        pvals = self.prestashop_product_dict2vals(shop, products)
 
-        with ProductMgn(ptsapp.uri, ptsapp.username, ptsapp.password) as product_api:
-            try:
-                product_info = product_api.info(code, store_view)
-            except:
-                logging.getLogger('prestashop sale').error(
-                    'Prestashop %s. Not found product %s' % (shop.name, code))
-                return None
+        # Shops - websites
+        shops = self.prestashop_product_esale_saleshops(prestashop_app,
+            products)
+        if shops:
+            tvals['esale_saleshops'] = [('add', shops)]
 
-            tvals = self.prestashop_template_dict2vals(shop, product_info)
-            pvals = self.prestashop_product_dict2vals(shop, product_info)
+        # Taxes and list price and cost price with or without taxes
+        customer_taxes, list_price, cost_price = (
+            self.prestashop_product_esale_taxes(
+                prestashop_app, products, tax_include))
+        if customer_taxes:
+            tvals['customer_taxes'] = [('add', customer_taxes)]
+        if list_price:
+            tvals['list_price'] = list_price
+        if cost_price:
+            tvals['cost_price'] = cost_price
 
-            #Shops - websites
-            shops = self.prestashop_product_esale_saleshops(ptsapp, product_info)
-            if shops:
-                tvals['esale_saleshops'] = [('add', shops)]
-
-            #Taxes and list price and cost price with or without taxes
-            customer_taxes, list_price, cost_price = self.prestashop_product_esale_taxes(ptsapp, product_info, tax_include)
-            if customer_taxes:
-                tvals['customer_taxes'] = [('add', customer_taxes)]
-            if list_price:
-                tvals['list_price'] = list_price
-            if cost_price:
-                tvals['cost_price'] = cost_price
-
-            return Template.create_esale_product(shop, tvals, pvals)
+        return Template.create_esale_product(shop, tvals, pvals)
