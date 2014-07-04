@@ -37,8 +37,6 @@ class PrestashopApp(ModelSQL, ModelView):
         'app', 'country', 'Countries')
     prestashop_states = fields.One2Many('prestashop.state', 'prestashop_app',
         'States', readonly=True)
-    product_options = fields.Boolean('Product Options',
-        help='Orders with product options. Split reference order line by "-"')
     prestashop_taxes = fields.One2Many('prestashop.tax', 'prestashop_app',
         'Taxes')
     default_taxes = fields.Many2Many('prestashop.app-default.taxes',
