@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <!-- This file is part prestashop module for Tryton.
 The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
-<tree string="Prestashop Tax" colors="If(~Eval('tax'), 'red', 'black')">
+<tree string="Prestashop Rule Group Tax">
     <field name="prestashop_app"/>
-    <field name="tax_id"/>
-    <field name="tax"/>
     <field name="name"/>
+    <field name="tax_rules_group_id"/>
 </tree>

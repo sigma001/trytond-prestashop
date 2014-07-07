@@ -3,8 +3,10 @@
 #the full copyright notices and license terms.
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
+from trytond.transaction import Transaction
 from trytond.pyson import Eval
 from requests import exceptions
+from decimal import Decimal
 
 import logging
 
@@ -12,8 +14,8 @@ __all__ = ['PrestashopApp', 'PrestashopWebsite', 'PrestashopWebsiteLanguage',
     'PrestashopCustomerGroup', 'PrestashopState',
     'PrestashopAppCustomer', 'PrestashopShopStatus',
     'PrestashopAppCountry', 'PrestashopAppLanguage',
-    'PrestashopTax', 'PrestashopAppDefaultTax',
-    'PrestashopApp2']
+    'PrestashopTaxRulesGroup', 'PrestashopTax', 'PrestashopRuleTax',
+    'PrestashopAppDefaultTax', 'PrestashopApp2']
 __metaclass__ = PoolMeta
 
 try:
@@ -37,8 +39,8 @@ class PrestashopApp(ModelSQL, ModelView):
         'app', 'country', 'Countries')
     prestashop_states = fields.One2Many('prestashop.state', 'prestashop_app',
         'States', readonly=True)
-    prestashop_taxes = fields.One2Many('prestashop.tax', 'prestashop_app',
-        'Taxes')
+    prestashop_tax_rules_group = fields.One2Many('prestashop.tax.rules.group',
+        'prestashop_app', 'Group Taxes')
     default_taxes = fields.Many2Many('prestashop.app-default.taxes',
         'prestashop_app', 'tax', 'Default Taxes', domain=[
         ('group.kind', 'in', ['sale', 'both']),
@@ -62,6 +64,7 @@ class PrestashopApp(ModelSQL, ModelView):
                 'test_connection': {},
                 'core_store': {},
                 'core_customer_group': {},
+                'core_taxes': {},
                 'core_states': {},
                 })
 
@@ -251,6 +254,146 @@ class PrestashopApp(ModelSQL, ModelView):
 
     @classmethod
     @ModelView.button
+    def core_taxes(self, apps):
+        """Import Prestashop Taxes to Tryton
+        Only create new values if not exist; not update or delete
+        """
+        pool = Pool()
+        AccountTax = pool.get('account.tax')
+        Tax = pool.get('prestashop.tax')
+        RuleTax = pool.get('prestashop.rule.tax')
+        TaxRulesGroup = pool.get('prestashop.tax.rules.group')
+        Subdivision = pool.get('country.subdivision')
+        Country = pool.get('country.country')
+
+        for app in apps:
+            to_create_taxes = []
+            to_create_rules = []
+            to_create_groups = []
+
+            client = app.get_prestashop_client()
+
+            ptaxes = client.taxes.get_list(filters={}, display='full')
+            prules = client.tax_rules.get_list(filters={}, display='full')
+            pgrups = client.tax_rule_groups.get_list(filters={}, display='full')
+            pcountries = client.countries.get_list(filters={}, display='full')
+            pstates = client.states.get_list(filters={}, display='full')
+
+            # Rules Group
+            for grup in pgrups:
+                groups = TaxRulesGroup.search([
+                    ('prestashop_app', '=', app),
+                    ('tax_rules_group_id', '=', '%s' % grup.id.pyval),
+                    ], limit=1)
+                if groups:
+                    continue
+
+                to_create_groups.append({
+                    'name': '%s' % grup.name.pyval,
+                    'tax_rules_group_id': '%s' % grup.id.pyval,
+                    'prestashop_app': app,
+                    })
+            if to_create_groups:
+                TaxRulesGroup.create(to_create_groups)
+            Transaction().cursor.commit()
+
+            # Taxes
+            for tax in ptaxes:
+                ptaxes = Tax.search([
+                    ('prestashop_app', '=', app),
+                    ('tax_id', '=', '%s' % tax.id.pyval),
+                    ], limit=1)
+                if ptaxes:
+                    continue
+
+                rate = (Decimal(tax.rate.pyval) / 100).quantize(Decimal('.01'))
+
+                account_taxes = AccountTax.search([
+                    ('rate', '=', rate),
+                    ('group.kind', 'in', ['sale', 'both']),
+                    ], limit=1)
+                if account_taxes:
+                    account_tax, = account_taxes
+                else:
+                    account_tax = None
+                    logging.getLogger('prestashop').warning(
+                        'Not found tax rate %s. Remember to select a tax' % 
+                        tax.rate.pyval)
+
+                to_create_taxes.append({
+                    'prestashop_app': app,
+                    'name': '%s' % tax.name.language[0].pyval,
+                    'tax_id': '%s' % tax.id.pyval,
+                    'tax': account_tax,
+                    })
+            if to_create_taxes:
+                Tax.create(to_create_taxes)
+            Transaction().cursor.commit()
+
+            # Rules
+            for rule in prules:
+
+                prules = RuleTax.search([
+                    ('prestashop_app', '=', app),
+                    ('rule_tax_id', '=', '%s' % rule.id.pyval),
+                    ], limit=1)
+                if prules:
+                    continue
+
+                ptaxes = Tax.search([
+                    ('prestashop_app', '=', app),
+                    ('tax_id', '=', '%s' % rule.id_tax.pyval),
+                    ], limit=1)
+                ptax, = ptaxes
+
+                pgroup, = TaxRulesGroup.search([
+                    ('prestashop_app', '=', app),
+                    ('tax_rules_group_id', '=', '%s' % rule.id_tax_rules_group.pyval),
+                    ], limit=1)
+
+                subdivision = None
+                if rule.id_state.pyval:
+                    for s in pstates:
+                        id_state = '%s' % s.id.pyval
+                        id_state_rule = '%s' % rule.id_state.pyval
+                        if id_state == id_state_rule:
+                            subdivisions = Subdivision.search([
+                                ('name', '=', '%s' % s.name.pyval),
+                                ], limit=1)
+                            if subdivisions:
+                                subdivision, = subdivisions
+
+                country = None
+                if rule.id_country.pyval:
+                    for c in pcountries:
+                        id_country = '%s' % c.id.pyval
+                        id_country_rule = '%s' % rule.id_country.pyval
+                        if id_country == id_country_rule:
+                            countries = Country.search([
+                                ('code', '=', '%s' % c.iso_code.pyval),
+                                ], limit=1)
+                            if countries:
+                                country, = countries
+
+                to_create_rules.append({
+                    'prestashop_app': app,
+                    'rule_tax_id': '%s' % rule.id.pyval,
+                    'id_tax_rules_group': '%s' % rule.id_tax_rules_group.pyval,
+                    'prestashop_tax': ptax,
+                    'country': country,
+                    'subdivision': subdivision,
+                    'zip_from': '%s' % rule.zipcode_from.pyval,
+                    'zip_to': '%s' % rule.zipcode_to.pyval,
+                    'group': pgroup,
+                    })
+
+            if to_create_rules:
+                RuleTax.create(to_create_rules)
+            Transaction().cursor.commit()
+
+
+    @classmethod
+    @ModelView.button
     def core_states(self, apps):
         """Import Prestashop States to Tryton
         Only create new values if not exist; not update or delete
@@ -409,27 +552,44 @@ class PrestashopAppLanguage(ModelSQL, ModelView):
     default = fields.Boolean('Default',
         help='Language is default Language in Prestashop')
 
+class PrestashopTaxRulesGroup(ModelSQL, ModelView):
+    'Prestashop Tax Rules Group'
+    __name__ = 'prestashop.tax.rules.group'
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', required=True)
+    prestashop_rule_taxes = fields.One2Many('prestashop.rule.tax', 'group',
+        'Prestashop Rule Taxes')
+    tax_rules_group_id = fields.Char('Prestashop Tax Rules Group', required=True)
+    name = fields.Char('name', required=True)
+
 
 class PrestashopTax(ModelSQL, ModelView):
     'Prestashop Tax'
     __name__ = 'prestashop.tax'
-    _rec_name = 'tax'
     prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', required=True)
+    name = fields.Char('Name', required=True, help='Prestashop Tax Name')
     tax_id = fields.Char('Prestashop Tax', required=True,
         help='Prestashop Tax ID')
     tax = fields.Many2One('account.tax', 'Tax', domain=[
         ('group.kind', 'in', ['sale', 'both']),
-        ], required=True)
-    sequence = fields.Integer('Sequence')
+        ], help='Add tax related to Prestashop tax (required)')
 
-    @classmethod
-    def __setup__(cls):
-        super(PrestashopTax, cls).__setup__()
-        cls._order.insert(0, ('sequence', 'ASC'))
 
-    @staticmethod
-    def default_sequence():
-        return 1
+class PrestashopRuleTax(ModelSQL, ModelView):
+    'Prestashop Rule Tax'
+    __name__ = 'prestashop.rule.tax'
+    _rec_name = 'prestashop_tax'
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', required=True)
+    rule_tax_id = fields.Char('Prestashop Rule Tax', required=True,
+        help='Prestashop Rule Tax ID')
+    id_tax_rules_group= fields.Char('Prestashop Rule Groups Tax', required=True,
+        help='Prestashop Rule Groups Tax ID')
+    prestashop_tax = fields.Many2One('prestashop.tax', 'Prestashop Tax', required=True)
+    country = fields.Many2One('country.country', 'Country', required=True)
+    subdivision = fields.Many2One('country.subdivision', 'Subdivision')
+    zip_from = fields.Char('Zip From')
+    zip_to = fields.Char('Zip To')
+    group = fields.Many2One('prestashop.tax.rules.group', 'Group', ondelete='CASCADE',
+        select=True)
 
 
 class PrestashopAppDefaultTax(ModelSQL):

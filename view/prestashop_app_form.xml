@@ -25,6 +25,8 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
             <button name="core_store" string="Import Prestashop Store" colspan="4"/>
             <separator string="Customer" colspan="4" id="customer"/>
             <button name="core_customer_group" string="Import Customer Group" colspan="4"/>
+            <separator string="Taxes" colspan="4" id="tax"/>
+            <button name="core_taxes" string="Import Taxes" colspan="4"/>
         </page>
         <page string="Countries" id="countries">
             <separator string="Countries" colspan="4" id="countries"/>
@@ -34,7 +36,7 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
     </notebook>
     <notebook>
         <page string="Taxes" id="taxes">
-            <field name="prestashop_taxes" colspan="4"/>
+            <field name="prestashop_tax_rules_group" colspan="4"/>
             <separator string="Default taxes" colspan="4" id="default-taxes"/>
             <label
                 string="Default taxes when create a new product and don't have tax in Prestashop."

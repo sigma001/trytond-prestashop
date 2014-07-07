@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- This file is part prestashop module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<form string="Prestashop Rule Group Tax" col="4">
+    <label name="prestashop_app"/>
+    <field name="prestashop_app"/>
+    <label name="name"/>
+    <field name="name"/>
+    <label name="tax_rules_group_id"/>
+    <field name="tax_rules_group_id"/>
+    <separator name="prestashop_rule_taxes" colspan="4"/>
+    <field name="prestashop_rule_taxes" colspan="4"/>
+</form>

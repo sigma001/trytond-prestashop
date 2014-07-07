@@ -226,6 +226,78 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
             <field name="name">prestashop_language_tree</field>
         </record>
 
+        <!--Prestashop Tax Rules Group -->
+        <record model="ir.ui.view" id="prestashop_tax_rules_group_form">
+            <field name="model">prestashop.tax.rules.group</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_tax_rules_group_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_tax_rules_group_tree">
+            <field name="model">prestashop.tax.rules.group</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_tax_rules_group_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_tax_rules_group">
+            <field name="model" search="[('model', '=', 'prestashop.tax.rules.group')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_tax_rules_group_form">
+            <field name="name">Prestashop Tax Rules Group</field>
+            <field name="res_model">prestashop.tax.rules.group</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_tax_rules_group_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_tax_rules_group_tree"/>
+            <field name="act_window" ref="act_prestashop_tax_rules_group_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_tax_rules_group_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_tax_rules_group_form"/>
+            <field name="act_window" ref="act_prestashop_tax_rules_group_form"/>
+        </record>
+        <menuitem parent="prestashop.menu_prestashop" action="act_prestashop_tax_rules_group_form"
+            id="menu_prestashop_tax_rules_group_form" sequence="10"/>
+
+        <!--Prestashop Rule Tax-->
+        <record model="ir.ui.view" id="prestashop_rule_tax_form">
+            <field name="model">prestashop.rule.tax</field>
+            <field name="type">form</field>
+            <field name="name">prestashop_rule_tax_form</field>
+        </record>
+        <record model="ir.ui.view" id="prestashop_rule_tax_tree">
+            <field name="model">prestashop.rule.tax</field>
+            <field name="type">tree</field>
+            <field name="name">prestashop_rule_tax_tree</field>
+        </record>
+
+        <record model="ir.model.access" id="access_prestashop_rule_tax">
+            <field name="model" search="[('model', '=', 'prestashop.rule.tax')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_rule_tax_form">
+            <field name="name">Prestashop Rule Tax</field>
+            <field name="res_model">prestashop.rule.tax</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_rule_tax_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_rule_tax_tree"/>
+            <field name="act_window" ref="act_prestashop_rule_tax_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_rule_tax_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_rule_tax_form"/>
+            <field name="act_window" ref="act_prestashop_rule_tax_form"/>
+        </record>
+        <menuitem parent="prestashop.menu_prestashop_tax_rules_group_form" action="act_prestashop_rule_tax_form"
+            id="menu_prestashop_rule_tax_form" sequence="10"/>
+
         <!--Prestashop Tax -->
         <record model="ir.ui.view" id="prestashop_tax_form">
             <field name="model">prestashop.tax</field>
@@ -237,5 +309,29 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
             <field name="type">tree</field>
             <field name="name">prestashop_tax_tree</field>
         </record>
+
+        <record model="ir.model.access" id="access_prestashop_tax">
+            <field name="model" search="[('model', '=', 'prestashop.tax')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.action.act_window" id="act_prestashop_tax_form">
+            <field name="name">Prestashop Tax</field>
+            <field name="res_model">prestashop.tax</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_tax_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="prestashop_tax_tree"/>
+            <field name="act_window" ref="act_prestashop_tax_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_prestashop_tax_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="prestashop_tax_form"/>
+            <field name="act_window" ref="act_prestashop_tax_form"/>
+        </record>
+        <menuitem parent="prestashop.menu_prestashop_rule_tax_form" action="act_prestashop_tax_form"
+            id="menu_prestashop_tax_form" sequence="10"/>
     </data>
 </tryton>
