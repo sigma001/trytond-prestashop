@@ -12,6 +12,7 @@ from datetime import datetime
 
 import logging
 import threading
+import pytz
 
 __all__ = ['SaleShop']
 __metaclass__ = PoolMeta
@@ -85,16 +86,30 @@ class SaleShop:
         """
         pool = Pool()
         SaleShop = pool.get('sale.shop')
+        Company = pool.get('company.company')
 
         ptsapp = self.prestashop_website.prestashop_app
         now = datetime.now()
 
         if not ofilter:
-            from_time = SaleShop.datetime_to_str(self.esale_from_orders or now)
-            if self.esale_to_orders:
-                to_time = SaleShop.datetime_to_str(self.esale_to_orders)
-            else:
-                to_time = SaleShop.datetime_to_str(now)
+            ftime = self.esale_from_orders or now
+            ttime = self.esale_to_orders or now
+
+            timezone = None
+            tzoffset = None
+            if self.esale_timezone:
+                timezone = self.esale_timezone
+            elif Transaction().context.get('company'):
+                company_id = Transaction().context.get('company')
+                company = Company(company_id)
+                timezone = company.timezone or None
+
+            if timezone:
+                tz = pytz.timezone(timezone)
+                tzoffset = tz.utcoffset(ftime)
+
+            from_time = SaleShop.datetime_to_str(ftime + tzoffset if tzoffset else ftime)
+            to_time = SaleShop.datetime_to_str(ttime + tzoffset if tzoffset else ttime)
 
             created_filter = {}
             created_filter['from'] = from_time
