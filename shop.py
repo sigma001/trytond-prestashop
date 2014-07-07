@@ -403,7 +403,7 @@ class SaleShop:
             SaleShop = pool.get('sale.shop')
             Sale = pool.get('sale.sale')
 
-            sale_shop, = SaleShop.browse([shop])
+            sale_shop = SaleShop(shop)
             ptsapp = sale_shop.prestashop_website.prestashop_app
 
             with Transaction().set_context({'prestashop_uri': sale_shop.uri}):
@@ -485,33 +485,33 @@ class SaleShop:
             logging.getLogger('prestashop sale').info(
                 'Prestashop %s. End import sales' % (sale_shop.name))
 
-    def export_state_prestashop(self, shop):
+    def export_state_prestashop(self):
         """Export State sale to Prestashop
-        :param shop: Obj
         """
         now = datetime.now()
-        date = shop.esale_last_state_orders or now
+        date = self.esale_last_state_orders or now
 
-        orders = self.get_sales_from_date(shop, date)
+        orders = self.get_sales_from_date(date)
 
         #~ Update date last import
-        self.write([shop], {'esale_last_state_orders': now})
+        self.write([self], {'esale_last_state_orders': now})
 
         if not orders:
             logging.getLogger('prestashop sale').info(
-                'Prestashop %s. Not orders to export state' % (shop.name))
+                'Prestashop %s. Not orders to export state' % (self.name))
         else:
             sales = [s.id for s in orders]
             logging.getLogger('prestashop order').info(
                 'Prestashop %s. Start export %s state orders' % (
-                shop.name, len(orders)))
+                self.name, len(orders)))
             db_name = Transaction().cursor.dbname
             thread1 = threading.Thread(target=self.export_state_prestashop_thread, 
-                args=(db_name, Transaction().user, shop.id, sales,))
+                args=(db_name, Transaction().user, self.id, sales,))
             thread1.start()
 
     def export_state_prestashop_thread(self, db_name, user, shop, sales):
         """Export State sale to Prestashop APP
+
         :param db_name: str
         :param user: int
         :param shop: int
@@ -522,54 +522,68 @@ class SaleShop:
             Sale = pool.get('sale.sale')
             SaleShop = pool.get('sale.shop')
 
-            sale_shop = SaleShop.browse([shop])[0]
-            ptsapp = sale_shop.prestashop_website.prestashop_app
+            sale_shop = SaleShop(shop)
+            states = {
+                s.state: s.code
+                for s in sale_shop.esale_states
+                }
+            sales = {s.reference: s for s in Sale.browse(sales)}
+            prestashop_app = sale_shop.prestashop_website.prestashop_app
 
-            states = {}
-            for s in sale_shop.esale_states:
-                states[s.state] = {'code': s.code, 'notify': s.notify}
+            with Transaction().set_context({'prestashop_uri': sale_shop.uri}):
+                client = prestashop_app.get_prestashop_client()
 
-            for sale in Sale.browse(sales):
+            references = '|'.join({'%s' % s for s in sales})
+            orders = client.orders.get_list(
+                filters={'reference': references},
+                display='full')
+
+            order_ids = '|'.join({'%s' % o.id.pyval for o in orders})
+            order_histories = client.order_histories.get_list(
+                filters={'id_order': order_ids},
+                display='full')
+            order_histories = {
+                h.id_order: h
+                for h in order_histories
+                }
+
+            for order in orders:
+                sale = sales[order.reference.pyval]
                 status = None
-                notify = None
-                cancel = None
-                comment = None
                 if sale.state == 'cancel':
-                    status = states['cancel']['code']
-                    notify = states['cancel']['notify']
-                    cancel = True
+                    status = states['cancel']
                 if sale.invoices_paid:
-                    status = states['paid']['code']
-                    notify = states['paid']['notify']
+                    status = states['paid']
                 if sale.shipments_done:
-                    status = states['shipment']['code']
-                    notify = states['shipment']['notify']
+                    status = states['shipment']
                 if sale.invoices_paid and sale.shipments_done:
-                    status = states['paid-shipment']['code']
-                    notify = states['paid-shipment']['notify']
+                    status = states['paid-shipment']
 
-                if not status or status == sale.status:
+                if not status or status == unicode(order.current_state):
                     logging.getLogger('prestashop sale').info(
                         'Prestashop %s. Not status or not update state %s' % (
                         sale_shop.name, sale.reference_external))
                     continue
 
-                try:
-                    # TODO: Export state order to Prestashop
-                    Sale.write([sale], {
-                        'status': status,
-                        'status_history': '%s\n%s - %s' % (
-                            sale.status_history,
+                order_history = order_histories[order.id.pyval]
+                new_order_history = client.order_histories.get_schema()
+                new_order_history.id_order = order.id.pyval
+                new_order_history.id_employee = order_history.id_employee
+                new_order_history.id_order_state = status
+                client.order_histories.create(new_order_history)
+
+                Sale.write([sale], {
+                        'status_history': '%s%s - %s' % (
+                            sale.status_history + '\n'
+                                if sale.status_history else '',
                             str(datetime.now()),
                             status),
                         })
-                    logging.getLogger('prestashop sale').info(
-                        'Prestashop %s. Export state %s - %s' % (
+
+                logging.getLogger('prestashop sale').info(
+                    'Prestashop %s. Export state %s - %s' % (
                         sale_shop.name, sale.reference_external, status))
-                except:
-                    logging.getLogger('prestashop sale').error(
-                        'Prestashop %s. Not export state %s' % (
-                        sale_shop.name, sale.reference_external))
+
             Transaction().cursor.commit()
             logging.getLogger('prestashop sale').info(
                 'Prestashop %s. End export state' % (sale_shop.name))
