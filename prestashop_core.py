@@ -73,9 +73,16 @@ class PrestashopApp(ModelSQL, ModelView):
 
         :return: object
         '''
-        if not all([self.uri, self.key]):
+        if Transaction().context.get('prestashop_uri'):
+            uri = Transaction().context.get('prestashop_uri')
+        else:
+            uri = self.uri
+        key = self.key
+
+        if not all([uri, key]):
             self.raise_user_error('prestashop_settings_missing')
-        return PrestaShopWebservice(self.uri, self.key)
+
+        return PrestaShopWebservice(uri, key)
 
     @classmethod
     @ModelView.button
@@ -153,6 +160,9 @@ class PrestashopApp(ModelSQL, ModelView):
                         prestashop.id.pyval,
                         shop.id,
                         ))
+                logging.getLogger('prestashop').warning(
+                    'Remember add URI in Prestashop Shop and add shops in ' \
+                    'user preferences')
             else:
                 logging.getLogger('prestashop').warning(
                     'Website exists. Prestashop APP: %s. '

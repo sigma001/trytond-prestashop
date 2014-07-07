@@ -23,6 +23,8 @@ class SaleShop:
     __name__ = 'sale.shop'
     prestashop_website = fields.Many2One('prestashop.website', 'Prestashop Website', 
         readonly=True)
+    uri = fields.Char('Prestashop Uri',
+        help='URI Prestashop Shop. http://yourdomainshop.com/ (with / at end)')
 
     @classmethod
     def __setup__(cls):
@@ -30,8 +32,7 @@ class SaleShop:
         cls._error_messages.update({
             'prestashop_product': 'Install Prestashop Product module to export ' \
                 'products to Prestashop',
-            'prestashop_error_get_orders': ('Prestashop "%s". ' \
-                'Error connection or get earlier date: "%s".'),
+            'prestashop_shop_uri': 'Shop Uri is empty. Add an uri in shop "%s"'
         })
 
     @classmethod
@@ -100,7 +101,13 @@ class SaleShop:
             created_filter['to'] = to_time
             ofilter = {'created_at': created_filter}
 
-        client = ptsapp.get_prestashop_client()
+        if not self.uri:
+            self.raise_user_error('prestashop_shop_uri', (
+                self.rec_name))
+
+        with Transaction().set_context({'prestashop_uri': self.uri}):
+            client = ptsapp.get_prestashop_client()
+
         orders = client.orders.get_list(
             filters={
                 'date_upd': '{0},{1}'.format(from_time, to_time)
@@ -384,7 +391,8 @@ class SaleShop:
             sale_shop, = SaleShop.browse([shop])
             ptsapp = sale_shop.prestashop_website.prestashop_app
 
-            client = ptsapp.get_prestashop_client()
+            with Transaction().set_context({'prestashop_uri': sale_shop.uri}):
+                client = ptsapp.get_prestashop_client()
 
             lines = [r for o in orders
                 for r in o.associations.order_rows.iterchildren()]

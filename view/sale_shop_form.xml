@@ -8,6 +8,8 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
         <page string="Prestashop" col="4" id="prestashop" states="{'invisible': Not(Equal(Eval('esale_shop_app'), 'prestashop'))}">
             <label name="prestashop_website"/>
             <field name="prestashop_website"/>
+            <label name="uri"/>
+            <field name="uri"/>
         </page>
     </xpath>
 </data>
