@@ -59,13 +59,13 @@ class Product:
                 price = base_price_without_tax(price, rate)
 
             vals = {
-                'name': value.name.language[lang].pyval,
+                'name': '%s' % value.name.language[lang].pyval,
                 'list_price': price,
                 'cost_price': Decimal(
                     value.wholesale_price.pyval).quantize(Decimal('.01')),
-                'esale_shortdescription':
+                'esale_shortdescription': '%s' %
                     value.description_short.language[lang].pyval,
-                'esale_slug': value.link_rewrite.language[lang].pyval,
+                'esale_slug': '%s' % value.link_rewrite.language[lang].pyval,
                 }
             return vals
         return {}
@@ -79,14 +79,16 @@ class Product:
         :param values: xml obj
         return dict
         """
+        app = shop.prestashop_website.prestashop_app
+
         for value in values:
             if value.reference.pyval:
                 vals = {
-                    'code': value.reference.pyval,
+                    'code': '%s' % value.reference.pyval,
                     }
             else:
                 vals = {
-                    'code': '%s.%s' % (shop.id, value.id.pyval),
+                    'code': '%s.%s' % (app.id, value.id.pyval),
                     }
             return vals
         return {}

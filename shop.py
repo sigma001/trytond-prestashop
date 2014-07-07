@@ -108,8 +108,7 @@ class SaleShop:
             )
 
         #~ Update date last import
-        #~ self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
-        #~ TODO descomentar
+        self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
 
         if not orders:
             logging.getLogger('prestashop sale').info(
@@ -179,11 +178,13 @@ class SaleShop:
         vals = []
         sequence = 1
 
+        app = shop.prestashop_website.prestashop_app
+
         for order_row in values.associations.order_rows.iterchildren():
             line = order_row
             code = (line.product_id
                 and products[line.product_id.pyval]
-                or 'shop.%s,product.%s' % (shop.id, line.product_id.pyval))
+                or 'app.%s,product.%s' % (app.id, line.product_id.pyval))
             price = Decimal(line.unit_price_tax_excl.pyval) # get price without tax
 
             values = {
