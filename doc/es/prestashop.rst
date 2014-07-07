@@ -21,8 +21,9 @@ Importar pedidos
 ================
 
 En el menú |menu_sale_shop| dispone del botón **Importar pedidos**. Es importante
-que los usuarios que van a importar pedidos tengan permisos a las tiendas del ERP
-para generar los pedidos.
+que los usuarios que van a importar pedidos tengan a sus preferencias las tiendas
+que se permiten vender (accede a Administración/Usuarios para gestionar los usuarios
+y las tiendas que podrán gestionar).
 
 La importación de pedidos se realiza según intervalo de fechas:
 
