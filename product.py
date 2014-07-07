@@ -21,7 +21,9 @@ class Product:
         :param values: xml obj
         return dict
         """
-        PrestashopAppLanguage = Pool().get('prestashop.app.language')
+        pool = Pool()
+        PrestashopAppLanguage = pool.get('prestashop.app.language')
+        PrestashopRuleTax = pool.get('prestashop.rule.tax')
 
         langs = PrestashopAppLanguage.search([('default', '=', True)])
         if langs:
@@ -31,16 +33,27 @@ class Product:
 
         app = shop.prestashop_website.prestashop_app
 
-        default_tax = None
-        taxes = app.default_taxes
-        if taxes:
-            default_tax, = taxes
-
         for value in values:
             # calculate price without tax (first tax in default taxes app)
             # because prestashop price is with tax and do not have
             # price without taxes (calculate)
             price = Decimal(value.price.pyval).quantize(Decimal('.01'))
+
+            # default tax: search tax by country or default tax app
+            default_tax = None
+            rule_taxes = PrestashopRuleTax.search([
+                ('prestashop_app', '=', app),
+                ('id_tax_rules_group', '=', '%s' % value.id_tax_rules_group),
+                ('country', '=', shop.esale_country),
+                ], limit=1)
+            if rule_taxes:
+                rule_tax, = rule_taxes
+                default_tax = rule_tax.prestashop_tax.tax
+            if not default_tax:
+                taxes = app.default_taxes
+                if taxes:
+                    default_tax, = taxes
+
             if default_tax:
                 rate = default_tax.rate
                 price = base_price_without_tax(price, rate)

@@ -108,7 +108,8 @@ class SaleShop:
             )
 
         #~ Update date last import
-        self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
+        #~ self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
+        #~ TODO descomentar
 
         if not orders:
             logging.getLogger('prestashop sale').info(
