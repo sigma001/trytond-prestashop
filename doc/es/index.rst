@@ -2,10 +2,18 @@
 Prestashop
 ==========
 
-A diferencia del módulo Prestashop Connect de OpenERP, este módulo
-se ha simplificado y dividido en dos: pedidos de venta y productos.
-De esta forma, puede instalar el módulo de Prestashop para ventas sin necesidad de
-gestionar los productos de Prestashop con el ERP.
+La comunicación entre el ERP y Prestashop se ha dividido en diferentes módulos según
+las necesidades de conexión que necesiten. La base de la integración con Prestashop
+le permite configurar los servidores de Prestashop y la importación/exportación de
+pedidos de venta (con la generación de productos, clientes y direcciones).
+
+Para más funcionalidades para la integración con Prestashop dispone de más módulos como:
+
+* prestashop_product: sincronización de productos
+* prestashop_stock: sincronización de stock
+
+La comunicación entre Prestashop y el ERP se realiza mediante los webservices de
+Prestashop (API).
 
 ---------------------------------
 Activar Webservices de Prestashop

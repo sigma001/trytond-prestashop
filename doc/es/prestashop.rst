@@ -39,16 +39,19 @@ opción es ir importando los pedidos en bloques y evitar la importación en masa
 El tiempo de importación de pedidos vendrá decidido según la cantidad de pedidos
 a procesar.
 
-.. note:: Si no gestiona los productos con el módulo 
-          `Productos Prestashop <../prestashop_product/index.html>`_, recuerde que
-          también deberá añadir al ERP aquellos productos que quiera que su
-          estoc se gestione con Tryton. En el momento de recibir los pedidos,
-          el sistema buscará productos por código en el ERP para relacionarlos
-          en el pedido de venta.
+.. note:: Si no gestiona los productos en el ERP, al recibir un pedido de venta
+          se buscará un producto por el código. Si el producto existe, se usará
+          este producto. Si el producto no existe, se creará un nuevo producto.
+          Los datos del producto a crear son los valores del producto que disponga
+          a Prestashop. En el caso de los impuestos, se buscará el impuesto que tenga
+          añadido a Prestashop y buscará el equivalente al ERP según el país por defecto
+          definido en la tienda.
+          En el caso que el producto a Prestashop no tenga código, se creará un código
+          al producto que consiste en: 'id-app,id-producto'.
 
-Si un pedido de venta ya se ha importado, este pedido de venta no se volverá a crear
-si se vuelve a importar. Si por cualquier motivo desea volver a importar el pedido de 
-venta, puede eliminar el pedido de venta del ERP y volver a importar por el rango de fechas.
+Si un pedido de venta ya se ha importado, este pedido de venta no se volverá a crear.
+Si por cualquier motivo desea volver a importar el pedido de venta, puede eliminar el
+pedido de venta del ERP y volver a importar por el rango de fechas.
 Como que el pedido no se encontrará por número de referencia y por tienda, se volverá
 a crear.
 
@@ -111,7 +114,8 @@ Líneas
 ------
 
 Cuando importe un pedido de venta se crearán las líneas del pedido. Es importante que
-los productos de Prestashop esten creados también al ERP con el mismo código o SKU.
+los productos de Prestashop esten creados también al ERP con el mismo código o referencia.
+Si el producto no está creado al ERP (no se encuentra), se creará un nuevo producto.
 
 El precio siempre es el que proviene de Prestashop y no se calculará un nuevo precio
 cuando se genere el pedido de venta.
@@ -122,9 +126,8 @@ Exportar estado
 ===============
 
 En el menú |menu_sale_shop| dispone del botón de **Exportar estados** el cual
-sincroniza los estados de Prestashop con los del ERP (complete, canceled,
-processing,...) de los pedidos a partir de la fecha especificada (fecha de
-modificación del pedido).
+sincroniza los estados de Prestashop con los del ERP de los pedidos a partir de la
+fecha especificada (fecha de modificación del pedido).
 
 .. |menu_sale_shop| tryref:: sale_shop.menu_sale_shop/complete_name
 
@@ -152,15 +155,15 @@ un servidor Prestashop en el ERP. Para configurar el servidor de Prestashop acce
 * Autenticación
 
   * URI del servidor Prestashop (con / al final).
-  * Usuario webservices de Prestashop.
-  * Password webservices de Prestashop.
+  * AuthKey.
   
 * Importar
 
   * Importar Prestashop Store: Importa toda la estructura de las tiendas de
-    Prestashop (website/store/view) y genera una tienda Prestashop en |menu_sale_shop|.
+    Prestashop y genera una tienda Prestashop en |menu_sale_shop|.
   * Importar grupo de clientes: Importa todos los grupos de clientes de Prestashop.
-  
+  * Importar impuestos: Importa toda la estructura de impuestos definida a Prestashop.
+
 * Países
 
   * Países: Países que queremos importar regiones de Prestashop para los pedidos
@@ -171,21 +174,17 @@ un servidor Prestashop en el ERP. Para configurar el servidor de Prestashop acce
 
   * Información de nuestro Prestashop APP con la estructura de website/store/view
 
-.. note:: Recuerde que deberá instalar el módulo que amplia los webservices de
-          Prestashop. Dispone del botón **Test conexión** para testear si los
-          datos introducidos son correctos.
-
 .. inheritref:: prestashop/prestashop:section:configuracion_tienda
 
 Configuración de la tienda
 ==========================
 
 A |menu_sale_shop| configure los valores de la tienda Prestashop. Fíjese que en
-las tiendas Prestashop, el campo **APP tienda** marcará que es una tienda Prestashop
-(no es una tienda Tryton eSale por defecto).
+las tiendas Prestashop, el campo **APP tienda** marcará que es una tienda Prestashop.
 
 En la configuración de la tienda esale, dispone de una pestaña más referente a
-la configuración de la tienda Prestashop.
+la configuración de la tienda Prestashop. De todos modos, revise la configuración
+de todos los campos relacionados con la tienda.
 
 * **Referencia Prestashop:** Usar el número de pedido de Prestashop
 * **Precio global:** Para los multiestores, si se usa precio global o no (sólo
