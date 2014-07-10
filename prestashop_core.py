@@ -59,6 +59,7 @@ class PrestashopApp(ModelSQL, ModelView):
             'sale_configuration': 'Add default values in configuration sale!',
             'wrong_url_n_key': 'Connection Failed! Please check URL and Key.',
             'wrong_url': 'Connection Failed! The URL provided is wrong.',
+            'add_countries': 'Add countries in Prestashop App',
         })
         cls._buttons.update({
                 'test_connection': {},
@@ -281,6 +282,9 @@ class PrestashopApp(ModelSQL, ModelView):
             to_create_rules = []
             to_create_groups = []
 
+            if not app.prestashop_countries:
+                self.raise_user_error('add_countries')
+
             client = app.get_prestashop_client()
 
             ptaxes = client.taxes.get_list(filters={}, display='full')
@@ -350,16 +354,27 @@ class PrestashopApp(ModelSQL, ModelView):
                 if prules:
                     continue
 
-                ptaxes = Tax.search([
+                papptaxes = Tax.search([
                     ('prestashop_app', '=', app),
                     ('tax_id', '=', '%s' % rule.id_tax.pyval),
                     ], limit=1)
-                ptax, = ptaxes
+                if not papptaxes:
+                    logging.getLogger('prestashop').warning(
+                        'Not found tax %s in tax rule %s' % 
+                        (rule.id_tax.pyval, rule.id.pyval))
+                    continue
+                papptax, = papptaxes
 
-                pgroup, = TaxRulesGroup.search([
+                pgroups = TaxRulesGroup.search([
                     ('prestashop_app', '=', app),
                     ('tax_rules_group_id', '=', '%s' % rule.id_tax_rules_group.pyval),
                     ], limit=1)
+                if not pgroups:
+                    logging.getLogger('prestashop').warning(
+                        'Not found rules group tax %s in tax rule %s' % 
+                        (rule.id_tax_rules_group.pyval, rule.id.pyval))
+                    continue
+                pgroup, = pgroups
 
                 subdivision = None
                 if rule.id_state.pyval:
@@ -384,12 +399,17 @@ class PrestashopApp(ModelSQL, ModelView):
                                 ], limit=1)
                             if countries:
                                 country, = countries
+                if not country:
+                    logging.getLogger('prestashop').warning(
+                        'Not found country %s in tax rule %s. Add default country (edit)' % 
+                        (rule.id_country.pyval, rule.id.pyval))
+                    country, = app.prestashop_countries
 
                 to_create_rules.append({
                     'prestashop_app': app,
                     'rule_tax_id': '%s' % rule.id.pyval,
                     'id_tax_rules_group': '%s' % rule.id_tax_rules_group.pyval,
-                    'prestashop_tax': ptax,
+                    'prestashop_tax': papptax.id,
                     'country': country,
                     'subdivision': subdivision,
                     'zip_from': '%s' % rule.zipcode_from.pyval,
