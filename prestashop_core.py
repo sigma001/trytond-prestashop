@@ -403,7 +403,7 @@ class PrestashopApp(ModelSQL, ModelView):
                     logging.getLogger('prestashop').warning(
                         'Not found country %s in tax rule %s. Add default country (edit)' % 
                         (rule.id_country.pyval, rule.id.pyval))
-                    country, = app.prestashop_countries
+                    country = app.prestashop_countries[0]
 
                 to_create_rules.append({
                     'prestashop_app': app,
