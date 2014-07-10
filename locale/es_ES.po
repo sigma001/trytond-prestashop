@@ -3,32 +3,45 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
 msgctxt "error:prestashop.app:"
+msgid "Add countries in Prestashop App"
+msgstr "Añande países a Prestashop App"
+
+msgctxt "error:prestashop.app:"
 msgid "Add default values in configuration sale!"
 msgstr "Añade valores por defecto en la configuración de las ventas"
 
 msgctxt "error:prestashop.app:"
-msgid ""
-"Prestashop connection are successfully but you need configure your Prestashop "
-"first"
-msgstr ""
-"La connexión con Prestashop se ha realizado correctamente pero debe configurar "
-"su Prestashop primero."
+msgid "Connection Failed! Please check URL and Key."
+msgstr "La conexión ha fallado. Revise la url y la clave."
 
 msgctxt "error:prestashop.app:"
-msgid "Prestashop connection are successfully!"
-msgstr "La connexión con Prestashop se ha realizado correctamente."
+msgid "Connection Failed! The URL provided is wrong."
+msgstr "La conexión ha fallado. La url no es correcta."
 
 msgctxt "error:prestashop.app:"
 msgid "Prestashop connection failed!"
 msgstr "La connexión con Prestashop no se ha realizado correctamente."
 
-msgctxt "error:sale.shop:"
-msgid "Install Prestashop Product module to export products to Prestashop"
-msgstr "Instala el módulo prestashop_product para exportar productos a Prestashop"
+msgctxt "error:prestashop.app:"
+msgid ""
+"Successfully Prestashop connection but you need to configure your Prestashop"
+" first."
+msgstr ""
+"Se ha conectado correctamente al Prestashop pero antes debe configurar el "
+"Prestashop App."
+
+msgctxt "error:prestashop.app:"
+msgid "Successfully Prestashop connection!"
+msgstr "Se ha conectado correctamente al Prestashop."
 
 msgctxt "error:sale.shop:"
-msgid "Prestashop \"%s\". Error connection or get earlier date: \"%s\"."
-msgstr "Prestashop \"%s\". Error en la connexion o una fecha más próxima: \"%s\"."
+msgid "Install Prestashop Product module to export products to Prestashop"
+msgstr ""
+"Instala el módulo prestashop_product para exportar productos a Prestashop"
+
+msgctxt "error:sale.shop:"
+msgid "Shop Uri is empty. Add an uri in shop \"%s\""
+msgstr "La uri de la tienda está vacío. Añade una uri en la tienda \"%s\"."
 
 msgctxt "error:sale.shop:"
 msgid "Threre are not orders to export"
@@ -58,41 +71,33 @@ msgctxt "field:prestashop.app,id:"
 msgid "ID"
 msgstr "ID"
 
+msgctxt "field:prestashop.app,key:"
+msgid "Key"
+msgstr "Clave"
+
 msgctxt "field:prestashop.app,languages:"
 msgid "Languages"
 msgstr "Idiomas"
-
-msgctxt "field:prestashop.app,prestashop_countries:"
-msgid "Countries"
-msgstr "Países"
-
-msgctxt "field:prestashop.app,prestashop_default_storeview:"
-msgid "Store View Default"
-msgstr "Store View defecto"
-
-msgctxt "field:prestashop.app,prestashop_regions:"
-msgid "Regions"
-msgstr "Regiones"
-
-msgctxt "field:prestashop.app,prestashop_taxes:"
-msgid "Taxes"
-msgstr "Impuestos"
-
-msgctxt "field:prestashop.app,prestashop_websites:"
-msgid "Websites"
-msgstr "Tiendas"
 
 msgctxt "field:prestashop.app,name:"
 msgid "Name"
 msgstr "Nombre"
 
-msgctxt "field:prestashop.app,password:"
-msgid "Password"
-msgstr "Contraseña"
+msgctxt "field:prestashop.app,prestashop_countries:"
+msgid "Countries"
+msgstr "Países"
 
-msgctxt "field:prestashop.app,product_options:"
-msgid "Product Options"
-msgstr "Opciones de producto"
+msgctxt "field:prestashop.app,prestashop_states:"
+msgid "States"
+msgstr "Subdivisiones"
+
+msgctxt "field:prestashop.app,prestashop_tax_rules_group:"
+msgid "Group Taxes"
+msgstr "Grupo impuestos"
+
+msgctxt "field:prestashop.app,prestashop_websites:"
+msgid "Websites"
+msgstr "Websites"
 
 msgctxt "field:prestashop.app,rec_name:"
 msgid "Name"
@@ -101,10 +106,6 @@ msgstr "Nombre"
 msgctxt "field:prestashop.app,uri:"
 msgid "URI"
 msgstr "URI"
-
-msgctxt "field:prestashop.app,username:"
-msgid "Username"
-msgstr "Nombre usuario"
 
 msgctxt "field:prestashop.app,write_date:"
 msgid "Write Date"
@@ -190,6 +191,10 @@ msgctxt "field:prestashop.app.customer,id:"
 msgid "ID"
 msgstr "ID"
 
+msgctxt "field:prestashop.app.customer,party:"
+msgid "Party"
+msgstr "Tercero"
+
 msgctxt "field:prestashop.app.customer,prestashop_app:"
 msgid "Prestashop App"
 msgstr "Prestashop App"
@@ -202,21 +207,9 @@ msgctxt "field:prestashop.app.customer,prestashop_emailid:"
 msgid "Email Address"
 msgstr "Dirección Email"
 
-msgctxt "field:prestashop.app.customer,prestashop_storeview:"
-msgid "Last Store View"
-msgstr "Última vista tienda"
-
-msgctxt "field:prestashop.app.customer,prestashop_storeview_ids:"
-msgid "Store Views"
-msgstr "Store Views"
-
 msgctxt "field:prestashop.app.customer,prestashop_vat:"
 msgid "Prestashop VAT"
 msgstr "Prestashop CIF/NIF"
-
-msgctxt "field:prestashop.app.customer,party:"
-msgid "Party"
-msgstr "Terceros"
 
 msgctxt "field:prestashop.app.customer,rec_name:"
 msgid "Name"
@@ -227,38 +220,6 @@ msgid "Write Date"
 msgstr "Fecha modificación"
 
 msgctxt "field:prestashop.app.customer,write_uid:"
-msgid "Write User"
-msgstr "Usuario modificación"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,app:"
-msgid "Prestashop APP"
-msgstr "Prestashop App"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,create_date:"
-msgid "Create Date"
-msgstr "Fecha creación"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,create_uid:"
-msgid "Create User"
-msgstr "Usuario creación"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,id:"
-msgid "ID"
-msgstr "ID"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,rec_name:"
-msgid "Name"
-msgstr "Nombre"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,storeview:"
-msgid "Storeview"
-msgstr "Storeview"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,write_date:"
-msgid "Write Date"
-msgstr "Fecha modificación"
-
-msgctxt "field:prestashop.app.customer-prestashop.storeview,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
@@ -290,9 +251,9 @@ msgctxt "field:prestashop.app.language,rec_name:"
 msgid "Name"
 msgstr "Nombre"
 
-msgctxt "field:prestashop.app.language,storeview:"
-msgid "Store View"
-msgstr "Store View"
+msgctxt "field:prestashop.app.language,website_language:"
+msgid "Website Language"
+msgstr "Idioma website"
 
 msgctxt "field:prestashop.app.language,write_date:"
 msgid "Write Date"
@@ -318,13 +279,13 @@ msgctxt "field:prestashop.customer.group,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:prestashop.customer.group,prestashop_app:"
-msgid "Prestashop App"
-msgstr "Prestashop App"
-
 msgctxt "field:prestashop.customer.group,name:"
 msgid "Name"
 msgstr "Nombre"
+
+msgctxt "field:prestashop.customer.group,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
 
 msgctxt "field:prestashop.customer.group,rec_name:"
 msgid "Name"
@@ -350,6 +311,10 @@ msgctxt "field:prestashop.external.referential,id:"
 msgid "ID"
 msgstr "ID"
 
+msgctxt "field:prestashop.external.referential,model:"
+msgid "Tryton Model"
+msgstr "Modelo Tryton"
+
 msgctxt "field:prestashop.external.referential,prestashop_app:"
 msgid "Prestashop App"
 msgstr "Prestashop App"
@@ -357,10 +322,6 @@ msgstr "Prestashop App"
 msgctxt "field:prestashop.external.referential,pts_id:"
 msgid "Prestashop ID"
 msgstr "Prestashop ID"
-
-msgctxt "field:prestashop.external.referential,model:"
-msgid "Tryton Model"
-msgstr "Modelo Tryton"
 
 msgctxt "field:prestashop.external.referential,rec_name:"
 msgid "Name"
@@ -378,49 +339,65 @@ msgctxt "field:prestashop.external.referential,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
-msgctxt "field:prestashop.region,code:"
-msgid "Code"
-msgstr "Código"
+msgctxt "field:prestashop.rule.tax,country:"
+msgid "Country"
+msgstr "País"
 
-msgctxt "field:prestashop.region,create_date:"
+msgctxt "field:prestashop.rule.tax,create_date:"
 msgid "Create Date"
 msgstr "Fecha creación"
 
-msgctxt "field:prestashop.region,create_uid:"
+msgctxt "field:prestashop.rule.tax,create_uid:"
 msgid "Create User"
 msgstr "Usuario creación"
 
-msgctxt "field:prestashop.region,id:"
+msgctxt "field:prestashop.rule.tax,group:"
+msgid "Group"
+msgstr "Grupo"
+
+msgctxt "field:prestashop.rule.tax,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:prestashop.region,prestashop_app:"
+msgctxt "field:prestashop.rule.tax,id_tax_rules_group:"
+msgid "Prestashop Rule Groups Tax"
+msgstr "Prestashop Rule Groups Tax"
+
+msgctxt "field:prestashop.rule.tax,prestashop_app:"
 msgid "Prestashop App"
 msgstr "Prestashop App"
 
-msgctxt "field:prestashop.region,name:"
+msgctxt "field:prestashop.rule.tax,prestashop_tax:"
+msgid "Prestashop Tax"
+msgstr "Impuesto Prestashop"
+
+msgctxt "field:prestashop.rule.tax,rec_name:"
 msgid "Name"
 msgstr "Nombre"
 
-msgctxt "field:prestashop.region,rec_name:"
-msgid "Name"
-msgstr "Nombre"
+msgctxt "field:prestashop.rule.tax,rule_tax_id:"
+msgid "Prestashop Rule Tax"
+msgstr "Prestashop Rule Tax"
 
-msgctxt "field:prestashop.region,region_id:"
-msgid "Region ID"
-msgstr "Region ID"
-
-msgctxt "field:prestashop.region,subdivision:"
+msgctxt "field:prestashop.rule.tax,subdivision:"
 msgid "Subdivision"
 msgstr "Subdivisión"
 
-msgctxt "field:prestashop.region,write_date:"
+msgctxt "field:prestashop.rule.tax,write_date:"
 msgid "Write Date"
 msgstr "Fecha modificación"
 
-msgctxt "field:prestashop.region,write_uid:"
+msgctxt "field:prestashop.rule.tax,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
+
+msgctxt "field:prestashop.rule.tax,zip_from:"
+msgid "Zip From"
+msgstr "Código postal desde"
+
+msgctxt "field:prestashop.rule.tax,zip_to:"
+msgid "Zip To"
+msgstr "Código postal hasta"
 
 msgctxt "field:prestashop.shop.status,cancel:"
 msgid "Cancel"
@@ -466,75 +443,47 @@ msgctxt "field:prestashop.shop.status,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
-msgctxt "field:prestashop.storegroup,create_date:"
-msgid "Create Date"
-msgstr "Fecha creación"
-
-msgctxt "field:prestashop.storegroup,create_uid:"
-msgid "Create User"
-msgstr "Usuario creación"
-
-msgctxt "field:prestashop.storegroup,id:"
-msgid "ID"
-msgstr "ID"
-
-msgctxt "field:prestashop.storegroup,prestashop_storeviews:"
-msgid "Store View"
-msgstr "Store View"
-
-msgctxt "field:prestashop.storegroup,prestashop_website:"
-msgid "Prestashop Website"
-msgstr "Prestashop Website"
-
-msgctxt "field:prestashop.storegroup,name:"
-msgid "Name"
-msgstr "Nombre"
-
-msgctxt "field:prestashop.storegroup,rec_name:"
-msgid "Name"
-msgstr "Nombre"
-
-msgctxt "field:prestashop.storegroup,write_date:"
-msgid "Write Date"
-msgstr "Fecha modificación"
-
-msgctxt "field:prestashop.storegroup,write_uid:"
-msgid "Write User"
-msgstr "Usuario modificación"
-
-msgctxt "field:prestashop.storeview,code:"
+msgctxt "field:prestashop.state,code:"
 msgid "Code"
 msgstr "Código"
 
-msgctxt "field:prestashop.storeview,create_date:"
+msgctxt "field:prestashop.state,create_date:"
 msgid "Create Date"
 msgstr "Fecha creación"
 
-msgctxt "field:prestashop.storeview,create_uid:"
+msgctxt "field:prestashop.state,create_uid:"
 msgid "Create User"
 msgstr "Usuario creación"
 
-msgctxt "field:prestashop.storeview,id:"
+msgctxt "field:prestashop.state,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:prestashop.storeview,prestashop_storegroup:"
-msgid "Prestashop Store Group"
-msgstr "Prestashop Store Group"
-
-msgctxt "field:prestashop.storeview,name:"
+msgctxt "field:prestashop.state,name:"
 msgid "Name"
 msgstr "Nombre"
 
-msgctxt "field:prestashop.storeview,rec_name:"
+msgctxt "field:prestashop.state,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.state,rec_name:"
 msgid "Name"
 msgstr "Nombre"
 
-msgctxt "field:prestashop.storeview,write_date:"
+msgctxt "field:prestashop.state,state_id:"
+msgid "State ID"
+msgstr "Subdivisión ID"
+
+msgctxt "field:prestashop.state,subdivision:"
+msgid "Subdivision"
+msgstr "Subdivisión"
+
+msgctxt "field:prestashop.state,write_date:"
 msgid "Write Date"
 msgstr "Fecha modificación"
 
-msgctxt "field:prestashop.storeview,write_uid:"
+msgctxt "field:prestashop.state,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
@@ -550,6 +499,10 @@ msgctxt "field:prestashop.tax,id:"
 msgid "ID"
 msgstr "ID"
 
+msgctxt "field:prestashop.tax,name:"
+msgid "Name"
+msgstr "Nombre"
+
 msgctxt "field:prestashop.tax,prestashop_app:"
 msgid "Prestashop App"
 msgstr "Prestashop App"
@@ -558,17 +511,13 @@ msgctxt "field:prestashop.tax,rec_name:"
 msgid "Name"
 msgstr "Nombre"
 
-msgctxt "field:prestashop.tax,sequence:"
-msgid "Sequence"
-msgstr "Secuencia"
-
 msgctxt "field:prestashop.tax,tax:"
 msgid "Tax"
 msgstr "Impuesto"
 
 msgctxt "field:prestashop.tax,tax_id:"
 msgid "Prestashop Tax"
-msgstr "Impuestos Prestashop"
+msgstr "Impuesto Prestashop"
 
 msgctxt "field:prestashop.tax,write_date:"
 msgid "Write Date"
@@ -578,9 +527,45 @@ msgctxt "field:prestashop.tax,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
-msgctxt "field:prestashop.website,code:"
-msgid "Code"
-msgstr "Código"
+msgctxt "field:prestashop.tax.rules.group,create_date:"
+msgid "Create Date"
+msgstr "Fecha creación"
+
+msgctxt "field:prestashop.tax.rules.group,create_uid:"
+msgid "Create User"
+msgstr "Usuario creación"
+
+msgctxt "field:prestashop.tax.rules.group,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.tax.rules.group,name:"
+msgid "name"
+msgstr "nombre"
+
+msgctxt "field:prestashop.tax.rules.group,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
+
+msgctxt "field:prestashop.tax.rules.group,prestashop_rule_taxes:"
+msgid "Prestashop Rule Taxes"
+msgstr "Prestashop Rule Taxes"
+
+msgctxt "field:prestashop.tax.rules.group,rec_name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:prestashop.tax.rules.group,tax_rules_group_id:"
+msgid "Prestashop Tax Rules Group"
+msgstr "Prestashop Tax Rules Group"
+
+msgctxt "field:prestashop.tax.rules.group,write_date:"
+msgid "Write Date"
+msgstr "Fecha modificación"
+
+msgctxt "field:prestashop.tax.rules.group,write_uid:"
+msgid "Write User"
+msgstr "Usuario modificación"
 
 msgctxt "field:prestashop.website,create_date:"
 msgid "Create Date"
@@ -594,17 +579,13 @@ msgctxt "field:prestashop.website,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:prestashop.website,prestashop_app:"
-msgid "Prestashop App"
-msgstr "Prestashop App"
-
-msgctxt "field:prestashop.website,prestashop_storegroups:"
-msgid "Store Group"
-msgstr "Store Group"
-
 msgctxt "field:prestashop.website,name:"
 msgid "Name"
 msgstr "Nombre"
+
+msgctxt "field:prestashop.website,prestashop_app:"
+msgid "Prestashop App"
+msgstr "Prestashop App"
 
 msgctxt "field:prestashop.website,rec_name:"
 msgid "Name"
@@ -619,6 +600,46 @@ msgid "Write Date"
 msgstr "Fecha modificación"
 
 msgctxt "field:prestashop.website,write_uid:"
+msgid "Write User"
+msgstr "Usuario modificación"
+
+msgctxt "field:prestashop.website.language,code:"
+msgid "Code"
+msgstr "Código"
+
+msgctxt "field:prestashop.website.language,create_date:"
+msgid "Create Date"
+msgstr "Fecha creación"
+
+msgctxt "field:prestashop.website.language,create_uid:"
+msgid "Create User"
+msgstr "Usuario creación"
+
+msgctxt "field:prestashop.website.language,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:prestashop.website.language,name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:prestashop.website.language,prestashop_id:"
+msgid "Prestashop ID"
+msgstr "Prestashop ID"
+
+msgctxt "field:prestashop.website.language,prestashop_website:"
+msgid "Prestashop Website"
+msgstr "Prestashop Website"
+
+msgctxt "field:prestashop.website.language,rec_name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:prestashop.website.language,write_date:"
+msgid "Write Date"
+msgstr "Fecha modificación"
+
+msgctxt "field:prestashop.website.language,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
@@ -638,6 +659,10 @@ msgctxt "field:sale.shop,prestashop_website:"
 msgid "Prestashop Website"
 msgstr "Prestashop Website"
 
+msgctxt "field:sale.shop,uri:"
+msgid "Prestashop Uri"
+msgstr "Uri Prestashop"
+
 msgctxt "help:prestashop.app,customer_default_group:"
 msgid "Default Customer Group"
 msgstr "Grupo de cliente por defecto"
@@ -646,31 +671,19 @@ msgctxt "help:prestashop.app,default_taxes:"
 msgid "Default taxes when create a product"
 msgstr "Impuestos por defecto cuando se crean productos si estos no tienen"
 
-msgctxt "help:prestashop.app,prestashop_default_storeview:"
-msgid "Default language this shop. If not select, use lang user"
-msgstr "Idioma por defecto. Si no se usa el idioma del usuario"
-
-msgctxt "help:prestashop.app,product_options:"
-msgid "Orders with product options. Split reference order line by \"-\""
-msgstr "Pedidos con opciones de producto. Divide la referencia por \"-\""
-
 msgctxt "help:prestashop.app,uri:"
 msgid "URI Prestashop App. http://yourprestashop.com/ (with / at end)"
-msgstr "URL Prestashop APP. http://www.yourprestashop.com/ (con / al final)"
+msgstr "URL Prestashop APP. http://www.miprestashop.com/ (con / al final)"
 
 msgctxt "help:prestashop.app.customer,prestashop_emailid:"
 msgid "Prestashop uses this email ID to match the customer."
 msgstr "Prestashop utiliza este Id como correo para buscar clientes."
 
-msgctxt "help:prestashop.app.customer,prestashop_storeview:"
-msgid "Last store view where the customer has bought."
-msgstr "La última tienda que el cliente a comprado"
-
 msgctxt "help:prestashop.app.customer,prestashop_vat:"
 msgid ""
-"To be able to receive customer VAT number you must set it in Prestashop Admin "
-"Panel, menu System / Configuration / Client Configuration / Name and Address"
-" Options."
+"To be able to receive customer VAT number you must set it in Prestashop "
+"Admin Panel, menu System / Configuration / Client Configuration / Name and "
+"Address Options."
 msgstr ""
 "Para recibir el número de CIF/NIF debe activarlo en Prestashop a Sistema / "
 "Configuración / Clientes / Nombre y dirección"
@@ -678,6 +691,14 @@ msgstr ""
 msgctxt "help:prestashop.app.language,default:"
 msgid "Language is default Language in Prestashop"
 msgstr "El idioma por defecto en Prestashop"
+
+msgctxt "help:prestashop.rule.tax,id_tax_rules_group:"
+msgid "Prestashop Rule Groups Tax ID"
+msgstr "Prestashop Rule Groups Tax ID"
+
+msgctxt "help:prestashop.rule.tax,rule_tax_id:"
+msgid "Prestashop Rule Tax ID"
+msgstr "Prestashop Rule Tax ID"
 
 msgctxt "help:prestashop.shop.status,cancel:"
 msgid "Sale Order change state draft to cancel"
@@ -699,33 +720,62 @@ msgctxt "help:prestashop.shop.status,status:"
 msgid "Code Status (example, cancel, pending, processing,..)"
 msgstr "Código estados (ejemplo: cancel, pending, processing...)"
 
+msgctxt "help:prestashop.tax,name:"
+msgid "Prestashop Tax Name"
+msgstr "Nombre impuesto Prestashop"
+
+msgctxt "help:prestashop.tax,tax:"
+msgid "Add tax related to Prestashop tax (required)"
+msgstr ""
+"Añade un impuesto relacionado con el impuesto de Prestashop (requerido)"
+
 msgctxt "help:prestashop.tax,tax_id:"
 msgid "Prestashop Tax ID"
 msgstr "ID impuesto Prestashop"
+
+msgctxt "help:sale.shop,uri:"
+msgid "URI Prestashop Shop. http://yourdomainshop.com/ (with / at end)"
+msgstr "URL Prestashop tienda. http://www.mitienda.com/ (con / al final)"
+
+msgctxt "model:ir.action,name:"
+msgid "Prestashop Region"
+msgstr "Prestashop Store View"
 
 msgctxt "model:ir.action,name:act_prestashop_app_form"
 msgid "Prestashop APP"
 msgstr "Prestashop App"
 
 msgctxt "model:ir.action,name:act_prestashop_customer_group_form"
-msgid "Prestashop Customer Group"
+msgid "Prestashop Customer Groups"
 msgstr "Prestashop grupo clientes"
 
-msgctxt "model:ir.action,name:act_prestashop_region_form"
-msgid "Prestashop Region"
-msgstr "Regiones Prestashop"
+msgctxt "model:ir.action,name:act_prestashop_rule_tax_form"
+msgid "Prestashop Rule Tax"
+msgstr "Prestashop Rule Tax"
 
-msgctxt "model:ir.action,name:act_prestashop_storegroup_form"
-msgid "Prestashop Store Group"
-msgstr "Prestashop Store Group"
+msgctxt "model:ir.action,name:act_prestashop_state_form"
+msgid "Prestashop States"
+msgstr "Subdivisiones Prestashop"
 
-msgctxt "model:ir.action,name:act_prestashop_storeview_form"
-msgid "Prestashop Store View"
-msgstr "Prestashop Store View"
+msgctxt "model:ir.action,name:act_prestashop_tax_form"
+msgid "Prestashop Tax"
+msgstr "Impuesto Prestashop"
+
+msgctxt "model:ir.action,name:act_prestashop_tax_rules_group_form"
+msgid "Prestashop Tax Rules Group"
+msgstr "Prestashop Tax Rules Group"
 
 msgctxt "model:ir.action,name:act_prestashop_website_form"
 msgid "Prestashop Website"
 msgstr "Prestashop Website"
+
+msgctxt "model:ir.action,name:act_prestashop_website_language_form"
+msgid "Prestashop Website Languages"
+msgstr "Idiomas Prestshop website"
+
+msgctxt "model:ir.ui.menu,name:"
+msgid "Prestashop Region"
+msgstr "Prestashop Store View"
 
 msgctxt "model:ir.ui.menu,name:menu_prestashop"
 msgid "Prestashop"
@@ -736,24 +786,32 @@ msgid "Prestashop APP"
 msgstr "Prestashop App"
 
 msgctxt "model:ir.ui.menu,name:menu_prestashop_customer_group_form"
-msgid "Prestashop Customer Group"
+msgid "Prestashop Customer Groups"
 msgstr "Prestashop grupo clientes"
 
-msgctxt "model:ir.ui.menu,name:menu_prestashop_region_form"
-msgid "Prestashop Region"
-msgstr "Regiones Prestashop"
+msgctxt "model:ir.ui.menu,name:menu_prestashop_rule_tax_form"
+msgid "Prestashop Rule Tax"
+msgstr "Prestashop Rule Tax"
 
-msgctxt "model:ir.ui.menu,name:menu_prestashop_storegroup_form"
-msgid "Prestashop Store Group"
-msgstr "Prestashop Store Group"
+msgctxt "model:ir.ui.menu,name:menu_prestashop_state_form"
+msgid "Prestashop States"
+msgstr "Subdivisiones Prestashop"
 
-msgctxt "model:ir.ui.menu,name:menu_prestashop_storeview_form"
-msgid "Prestashop Store View"
-msgstr "Prestashop Store View"
+msgctxt "model:ir.ui.menu,name:menu_prestashop_tax_form"
+msgid "Prestashop Tax"
+msgstr "Impuesto Prestashop"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_tax_rules_group_form"
+msgid "Prestashop Tax Rules Group"
+msgstr "Prestashop Tax Rules Group"
 
 msgctxt "model:ir.ui.menu,name:menu_prestashop_website_form"
 msgid "Prestashop Website"
 msgstr "Prestashop Website"
+
+msgctxt "model:ir.ui.menu,name:menu_prestashop_website_language_form"
+msgid "Prestashop Website Languages"
+msgstr "Idiomas Prestshop website"
 
 msgctxt "model:prestashop.app,name:"
 msgid "Prestashop APP"
@@ -771,10 +829,6 @@ msgctxt "model:prestashop.app.customer,name:"
 msgid "Prestashop App Customer"
 msgstr "Prestashop App Clientes"
 
-msgctxt "model:prestashop.app.customer-prestashop.storeview,name:"
-msgid "Prestashop APP Customer - Prestashop StoreView"
-msgstr "Prestashop App Clientes - Prestashop StoreView"
-
 msgctxt "model:prestashop.app.language,name:"
 msgid "Prestashop APP - Language"
 msgstr "Prestashop APP - Idioma"
@@ -787,29 +841,33 @@ msgctxt "model:prestashop.external.referential,name:"
 msgid "Prestashop External Referential"
 msgstr "Prestashop External Referential"
 
-msgctxt "model:prestashop.region,name:"
-msgid "Prestashop Region"
-msgstr "Regiones Prestashop"
+msgctxt "model:prestashop.rule.tax,name:"
+msgid "Prestashop Rule Tax"
+msgstr "Prestashop Rule Tax"
 
 msgctxt "model:prestashop.shop.status,name:"
 msgid "Prestashop Shop Status"
 msgstr "Prestashop estado tienda"
 
-msgctxt "model:prestashop.storegroup,name:"
-msgid "Prestashop Store Group"
-msgstr "Prestashop Store Group"
-
-msgctxt "model:prestashop.storeview,name:"
-msgid "Prestashop Store View"
-msgstr "Prestashop Store View"
+msgctxt "model:prestashop.state,name:"
+msgid "Prestashop State"
+msgstr "Subdivisión Prestashop"
 
 msgctxt "model:prestashop.tax,name:"
 msgid "Prestashop Tax"
 msgstr "Impuesto Prestashop"
 
+msgctxt "model:prestashop.tax.rules.group,name:"
+msgid "Prestashop Tax Rules Group"
+msgstr "Prestashop Tax Rules Group"
+
 msgctxt "model:prestashop.website,name:"
 msgid "Prestashop Website"
 msgstr "Prestashop Website"
+
+msgctxt "model:prestashop.website.language,name:"
+msgid "Prestashop Website Languages"
+msgstr "Idiomas Prestshop website"
 
 msgctxt "view:prestashop.app.language:"
 msgid "Prestashop Language"
@@ -832,7 +890,8 @@ msgid "Default taxes"
 msgstr "Impuesto defecto"
 
 msgctxt "view:prestashop.app:"
-msgid "Default taxes when create a new product and don't have tax in Prestashop."
+msgid ""
+"Default taxes when create a new product and don't have tax in Prestashop."
 msgstr ""
 "Impuesto por defecto en la creación de un producto y no dispone de impuesto "
 "a Prestashop."
@@ -854,8 +913,12 @@ msgid "Import Prestashop Store"
 msgstr "Importar Prestashop Store"
 
 msgctxt "view:prestashop.app:"
-msgid "Import Regions"
-msgstr "Importar regiones"
+msgid "Import States"
+msgstr "Importar subdivisiones"
+
+msgctxt "view:prestashop.app:"
+msgid "Import Taxes"
+msgstr "Importar impuestos"
 
 msgctxt "view:prestashop.app:"
 msgid "Languages"
@@ -864,10 +927,6 @@ msgstr "Idiomas"
 msgctxt "view:prestashop.app:"
 msgid "Prestashop APP"
 msgstr "Prestashop APP"
-
-msgctxt "view:prestashop.app:"
-msgid "Regions"
-msgstr "Regiones"
 
 msgctxt "view:prestashop.app:"
 msgid "Store"
@@ -883,7 +942,7 @@ msgstr "Test connexión"
 
 msgctxt "view:prestashop.app:"
 msgid "Websites"
-msgstr "Tiendas"
+msgstr "Websites"
 
 msgctxt "view:prestashop.customer.group:"
 msgid "Prestashop Customer Group"
@@ -893,25 +952,29 @@ msgctxt "view:prestashop.external.referential:"
 msgid "Prestashop APP"
 msgstr "Prestashop APP"
 
-msgctxt "view:prestashop.region:"
-msgid "Prestashop Region"
-msgstr "Regiones Prestashop"
+msgctxt "view:prestashop.rule.tax:"
+msgid "Prestashop Rule Tax"
+msgstr "Prestashop Rule Tax"
 
 msgctxt "view:prestashop.shop.status:"
 msgid "Status"
 msgstr "Estados"
 
-msgctxt "view:prestashop.storegroup:"
-msgid "Prestashop Store Group"
-msgstr "Prestashop Store Group"
+msgctxt "view:prestashop.state:"
+msgid "Prestashop State"
+msgstr "Subdivisión Prestashop"
 
-msgctxt "view:prestashop.storeview:"
-msgid "Prestashop Store View"
-msgstr "Prestashop Store View"
+msgctxt "view:prestashop.tax.rules.group:"
+msgid "Prestashop Rule Group Tax"
+msgstr "Prestashop Rule Group Tax"
 
 msgctxt "view:prestashop.tax:"
 msgid "Prestashop Tax"
-msgstr "Impuestos Prestashop"
+msgstr "Impuesto Prestashop"
+
+msgctxt "view:prestashop.website.language:"
+msgid "Prestashop Website Language"
+msgstr "Idioma Prestshop website"
 
 msgctxt "view:prestashop.website:"
 msgid "Prestashop Website"
