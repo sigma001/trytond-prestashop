@@ -149,6 +149,7 @@ class PrestashopApp(ModelSQL, ModelView):
                     'esale_category': sale_configuration.sale_category.id,
                     'payment_term': sale_configuration.sale_payment_term.id,
                     'prestashop_website': website.id,
+                    'uri': app.uri,
                 }
                 shop = SaleShop.create([values])[0]
                 PrestashopExternalReferential.set_external_referential(app,
