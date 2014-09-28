@@ -1,5 +1,5 @@
 #This file is part prestashop module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
@@ -33,9 +33,9 @@ class PrestashopApp(ModelSQL, ModelView):
     uri = fields.Char('URI', required=True,
         help='URI Prestashop App. http://yourprestashop.com/ (with / at end)')
     key = fields.Char('Key', required=True)
-    prestashop_websites = fields.One2Many('prestashop.website', 'prestashop_app',
-        'Websites', readonly=True)
-    prestashop_countries = fields.Many2Many('prestashop.app-country.country', 
+    prestashop_websites = fields.One2Many('prestashop.website',
+        'prestashop_app', 'Websites', readonly=True)
+    prestashop_countries = fields.Many2Many('prestashop.app-country.country',
         'app', 'country', 'Countries')
     prestashop_states = fields.One2Many('prestashop.state', 'prestashop_app',
         'States', readonly=True)
@@ -70,8 +70,8 @@ class PrestashopApp(ModelSQL, ModelView):
                 })
 
     def get_prestashop_client(self):
-        '''Authenticated Prestashop client
-
+        '''
+        Authenticated Prestashop client
         :return: object
         '''
         if Transaction().context.get('prestashop_uri'):
@@ -88,7 +88,7 @@ class PrestashopApp(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def test_connection(cls, apps):
-        '''Test connection to Prestashop APP'''
+        'Test connection to Prestashop APP'
         for app in apps:
             try:
                 client = app.get_prestashop_client()
@@ -106,17 +106,17 @@ class PrestashopApp(ModelSQL, ModelView):
         return list website ids
         '''
         pool = Pool()
-        PrestashopExternalReferential = pool.get('prestashop.external.referential')
+        ExternalReferential = pool.get('prestashop.external.referential')
         PrestashopWebsite = pool.get('prestashop.website')
         SaleShop = pool.get('sale.shop')
 
-        sale_configuration = SaleShop.sale_configuration()
-        if not sale_configuration.sale_warehouse:
+        sale_conf = SaleShop.sale_configuration()
+        if not sale_conf.sale_warehouse:
             cls.raise_user_error('sale_configuration')
 
         websites = []
         for prestashop in client.shops.get_list(display='full'):
-            website_ref = PrestashopExternalReferential.get_pts2try(app,
+            website_ref = ExternalReferential.get_pts2try(app,
                 'prestashop.website', prestashop.id.pyval)
 
             if not website_ref:
@@ -126,7 +126,7 @@ class PrestashopApp(ModelSQL, ModelView):
                     }
                 website = PrestashopWebsite.create([values])[0]
                 websites.append(website)
-                PrestashopExternalReferential.set_external_referential(app,
+                ExternalReferential.set_external_referential(app,
                     'prestashop.website', website.id, prestashop.id.pyval)
                 logging.getLogger('prestashop').info(
                     'Create Website. Prestashop APP: %s. '
@@ -138,21 +138,23 @@ class PrestashopApp(ModelSQL, ModelView):
                 '''Sale Shop'''
                 values = {
                     'name': prestashop.name.pyval,
-                    'warehouse': sale_configuration.sale_warehouse.id,
-                    'price_list': sale_configuration.sale_price_list.id,
+                    'warehouse': sale_conf.sale_warehouse.id,
+                    'price_list': sale_conf.sale_price_list.id,
                     'esale_available': True,
                     'esale_shop_app': 'prestashop',
-                    'esale_delivery_product': sale_configuration.sale_delivery_product.id,
-                    'esale_discount_product': sale_configuration.sale_discount_product.id,
-                    'esale_uom_product': sale_configuration.sale_uom_product.id,
-                    'esale_currency': sale_configuration.sale_currency.id,
-                    'esale_category': sale_configuration.sale_category.id,
-                    'payment_term': sale_configuration.sale_payment_term.id,
+                    'esale_delivery_product':
+                        sale_conf.sale_delivery_product.id,
+                    'esale_discount_product':
+                        sale_conf.sale_discount_product.id,
+                    'esale_uom_product': sale_conf.sale_uom_product.id,
+                    'esale_currency': sale_conf.sale_currency.id,
+                    'esale_category': sale_conf.sale_category.id,
+                    'payment_term': sale_conf.sale_payment_term.id,
                     'prestashop_website': website.id,
                     'uri': app.uri,
                 }
                 shop = SaleShop.create([values])[0]
-                PrestashopExternalReferential.set_external_referential(app,
+                ExternalReferential.set_external_referential(app,
                     'sale.shop', shop.id, website.id)
                 logging.getLogger('prestashop').info(
                     'Create Sale Shop. Prestashop APP: %s. Website %s - %s. '
@@ -163,7 +165,7 @@ class PrestashopApp(ModelSQL, ModelView):
                         shop.id,
                         ))
                 logging.getLogger('prestashop').warning(
-                    'Remember add URI in Prestashop Shop and add shops in ' \
+                    'Remember add URI in Prestashop Shop and add shops in '
                     'user preferences')
             else:
                 logging.getLogger('prestashop').warning(
@@ -214,7 +216,8 @@ class PrestashopApp(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def core_customer_group(cls, apps):
-        '''Import Prestashop Group to Tryton
+        '''
+        Import Prestashop Group to Tryton
         Only create new values if not exist; not update or delete
         '''
         pool = Pool()
@@ -230,7 +233,7 @@ class PrestashopApp(ModelSQL, ModelView):
                 continue
 
             lang = langs[0].website_language.prestashop_id
-        
+
             client = app.get_prestashop_client()
             prestashop_groups = client.groups.get_list(display='full')
             customer_groups = CustomerGroup.search([
@@ -267,9 +270,10 @@ class PrestashopApp(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def core_taxes(self, apps):
-        """Import Prestashop Taxes to Tryton
+        '''
+        Import Prestashop Taxes to Tryton
         Only create new values if not exist; not update or delete
-        """
+        '''
         pool = Pool()
         AccountTax = pool.get('account.tax')
         Tax = pool.get('prestashop.tax')
@@ -290,7 +294,8 @@ class PrestashopApp(ModelSQL, ModelView):
 
             ptaxes = client.taxes.get_list(filters={}, display='full')
             prules = client.tax_rules.get_list(filters={}, display='full')
-            pgrups = client.tax_rule_groups.get_list(filters={}, display='full')
+            pgrups = client.tax_rule_groups.get_list(filters={},
+                display='full')
             pcountries = client.countries.get_list(filters={}, display='full')
             pstates = client.states.get_list(filters={}, display='full')
 
@@ -332,7 +337,7 @@ class PrestashopApp(ModelSQL, ModelView):
                 else:
                     account_tax = None
                     logging.getLogger('prestashop').warning(
-                        'Not found tax rate %s. Remember to select a tax' % 
+                        'Not found tax rate %s. Remember to select a tax' %
                         tax.rate.pyval)
 
                 to_create_taxes.append({
@@ -361,18 +366,19 @@ class PrestashopApp(ModelSQL, ModelView):
                     ], limit=1)
                 if not papptaxes:
                     logging.getLogger('prestashop').warning(
-                        'Not found tax %s in tax rule %s' % 
+                        'Not found tax %s in tax rule %s' %
                         (rule.id_tax.pyval, rule.id.pyval))
                     continue
                 papptax, = papptaxes
 
                 pgroups = TaxRulesGroup.search([
                     ('prestashop_app', '=', app),
-                    ('tax_rules_group_id', '=', '%s' % rule.id_tax_rules_group.pyval),
+                    ('tax_rules_group_id', '=', '%s' %
+                        rule.id_tax_rules_group.pyval),
                     ], limit=1)
                 if not pgroups:
                     logging.getLogger('prestashop').warning(
-                        'Not found rules group tax %s in tax rule %s' % 
+                        'Not found rules group tax %s in tax rule %s' %
                         (rule.id_tax_rules_group.pyval, rule.id.pyval))
                     continue
                 pgroup, = pgroups
@@ -402,7 +408,8 @@ class PrestashopApp(ModelSQL, ModelView):
                                 country, = countries
                 if not country:
                     logging.getLogger('prestashop').warning(
-                        'Not found country %s in tax rule %s. Add default country (edit)' % 
+                        'Not found country %s in tax rule %s. Add default '
+                        'country (edit)' %
                         (rule.id_country.pyval, rule.id.pyval))
                     country = app.prestashop_countries[0]
 
@@ -422,13 +429,13 @@ class PrestashopApp(ModelSQL, ModelView):
                 RuleTax.create(to_create_rules)
             Transaction().cursor.commit()
 
-
     @classmethod
     @ModelView.button
     def core_states(self, apps):
-        """Import Prestashop States to Tryton
+        '''
+        Import Prestashop States to Tryton
         Only create new values if not exist; not update or delete
-        """
+        '''
         pool = Pool()
         PrestashopState = pool.get('prestashop.state')
         CountrySubdivision = pool.get('country.subdivision')
@@ -465,8 +472,8 @@ class PrestashopApp(ModelSQL, ModelView):
                 state_code = state.iso_code.pyval
 
                 pst_states = PrestashopState.search([
-                    ('state_id','=', state_id),
-                    ('prestashop_app','=', app.id)
+                    ('state_id', '=', state_id),
+                    ('prestashop_app', '=', app.id)
                     ], limit=1)
                 if pst_states:
                     logging.getLogger('prestashop').warning(
@@ -507,7 +514,8 @@ class PrestashopWebsiteLanguage(ModelSQL, ModelView):
     __name__ = 'prestashop.website.language'
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
-    prestashop_website = fields.Many2One('prestashop.website', 'Prestashop Website')
+    prestashop_website = fields.Many2One('prestashop.website',
+        'Prestashop Website')
     prestashop_id = fields.Integer("Prestashop ID")
 
 
@@ -517,7 +525,8 @@ class PrestashopCustomerGroup(ModelSQL, ModelView):
     name = fields.Char('Name', required=True, readonly=True)
     customer_group = fields.Integer('Customer Group ID',
         required=True, readonly=True)
-    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', readonly=True)
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
+        readonly=True)
 
 
 class PrestashopState(ModelSQL, ModelView):
@@ -535,14 +544,16 @@ class PrestashopAppCustomer(ModelSQL, ModelView):
     'Prestashop App Customer'
     __name__ = 'prestashop.app.customer'
     party = fields.Many2One('party.party', 'Party', required=True)
-    prestashop_app = fields.Many2One('prestashop.app','Prestashop App', required=True)
-    prestashop_customer_group = fields.Many2One('prestashop.customer.group','Customer Group', required=True) #TODO: Domain
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
+        required=True)
+    prestashop_customer_group = fields.Many2One('prestashop.customer.group',
+        'Customer Group', required=True)  # TODO: Domain
     prestashop_emailid = fields.Char('Email Address', required=True,
         help="Prestashop uses this email ID to match the customer.")
     prestashop_vat = fields.Char('Prestashop VAT', readonly=True,
-        help='To be able to receive customer VAT number you must set ' \
-        'it in Prestashop Admin Panel, menu System / Configuration / ' \
-        'Client Configuration / Name and Address Options.')
+        help=('To be able to receive customer VAT number you must set '
+        'it in Prestashop Admin Panel, menu System / Configuration / '
+        'Client Configuration / Name and Address Options.'))
 
 
 class PrestashopShopStatus(ModelSQL, ModelView):
@@ -552,8 +563,8 @@ class PrestashopShopStatus(ModelSQL, ModelView):
         help='Code Status (example, cancel, pending, processing,..)')
     shop = fields.Many2One('sale.shop', 'Shop', required=True)
     confirm = fields.Boolean('Confirm',
-        help='Confirm order. Sale Order change state draft to done, ' \
-        'and generate picking and/or invoice automatlly')
+        help=('Confirm order. Sale Order change state draft to done, '
+        'and generate picking and/or invoice automatlly'))
     cancel = fields.Boolean('Cancel',
         help='Sale Order change state draft to cancel')
     paidinweb = fields.Boolean('Paid in web',
@@ -564,39 +575,44 @@ class PrestashopAppCountry(ModelSQL, ModelView):
     'Prestashop APP - Country'
     __name__ = 'prestashop.app-country.country'
     _table = 'prestashop_app_country_country'
-    app = fields.Many2One('prestashop.app', 'Prestashop APP', ondelete='RESTRICT',
-            select=True, required=True)
+    app = fields.Many2One('prestashop.app', 'Prestashop APP',
+        ondelete='RESTRICT', select=True, required=True)
     country = fields.Many2One('country.country', 'Country', ondelete='CASCADE',
-            select=True, required=True)
+        select=True, required=True)
 
 
 class PrestashopAppLanguage(ModelSQL, ModelView):
     'Prestashop APP - Language'
     __name__ = 'prestashop.app.language'
     _rec_name = 'lang'
-    app = fields.Many2One('prestashop.app', 'Prestashop APP', ondelete='CASCADE',
-            select=True, required=True)
+    app = fields.Many2One('prestashop.app', 'Prestashop APP',
+        ondelete='CASCADE', select=True, required=True)
     lang = fields.Many2One('ir.lang', 'Language', required=True)
-    website_language = fields.Many2One('prestashop.website.language', 'Website Language', required=True,
+    website_language = fields.Many2One('prestashop.website.language',
+        'Website Language', required=True,
         domain=[('prestashop_website.prestashop_app', '=', Eval('app'))],
         depends=['app'])
     default = fields.Boolean('Default',
         help='Language is default Language in Prestashop')
 
+
 class PrestashopTaxRulesGroup(ModelSQL, ModelView):
     'Prestashop Tax Rules Group'
     __name__ = 'prestashop.tax.rules.group'
-    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', required=True)
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
+        required=True)
     prestashop_rule_taxes = fields.One2Many('prestashop.rule.tax', 'group',
         'Prestashop Rule Taxes')
-    tax_rules_group_id = fields.Char('Prestashop Tax Rules Group', required=True)
+    tax_rules_group_id = fields.Char('Prestashop Tax Rules Group',
+        required=True)
     name = fields.Char('name', required=True)
 
 
 class PrestashopTax(ModelSQL, ModelView):
     'Prestashop Tax'
     __name__ = 'prestashop.tax'
-    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', required=True)
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
+        required=True)
     name = fields.Char('Name', required=True, help='Prestashop Tax Name')
     tax_id = fields.Char('Prestashop Tax', required=True,
         help='Prestashop Tax ID')
@@ -609,18 +625,20 @@ class PrestashopRuleTax(ModelSQL, ModelView):
     'Prestashop Rule Tax'
     __name__ = 'prestashop.rule.tax'
     _rec_name = 'prestashop_tax'
-    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App', required=True)
+    prestashop_app = fields.Many2One('prestashop.app', 'Prestashop App',
+        required=True)
     rule_tax_id = fields.Char('Prestashop Rule Tax', required=True,
         help='Prestashop Rule Tax ID')
-    id_tax_rules_group= fields.Char('Prestashop Rule Groups Tax', required=True,
-        help='Prestashop Rule Groups Tax ID')
-    prestashop_tax = fields.Many2One('prestashop.tax', 'Prestashop Tax', required=True)
+    id_tax_rules_group = fields.Char('Prestashop Rule Groups Tax',
+        required=True, help='Prestashop Rule Groups Tax ID')
+    prestashop_tax = fields.Many2One('prestashop.tax', 'Prestashop Tax',
+        required=True)
     country = fields.Many2One('country.country', 'Country', required=True)
     subdivision = fields.Many2One('country.subdivision', 'Subdivision')
     zip_from = fields.Char('Zip From')
     zip_to = fields.Char('Zip To')
-    group = fields.Many2One('prestashop.tax.rules.group', 'Group', ondelete='CASCADE',
-        select=True)
+    group = fields.Many2One('prestashop.tax.rules.group', 'Group',
+        ondelete='CASCADE', select=True)
 
 
 class PrestashopAppDefaultTax(ModelSQL):
@@ -635,7 +653,7 @@ class PrestashopAppDefaultTax(ModelSQL):
 
 class PrestashopApp2:
     __name__ = 'prestashop.app'
-    customer_default_group = fields.Many2One('prestashop.customer.group', 
+    customer_default_group = fields.Many2One('prestashop.customer.group',
         'Customer Group', domain=[('prestashop_app', '=', Eval('id'))],
         depends=['id'],
         help='Default Customer Group')

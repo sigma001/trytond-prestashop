@@ -1,5 +1,5 @@
 #This file is part prestashop module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from trytond.pool import Pool, PoolMeta
 from decimal import Decimal
@@ -14,13 +14,12 @@ class Product:
 
     @classmethod
     def prestashop_template_dict2vals(self, shop, values):
-        """
+        '''
         Convert Prestashop values to Template
-
         :param shop: obj
         :param values: xml obj
         return dict
-        """
+        '''
         pool = Pool()
         PrestashopAppLanguage = pool.get('prestashop.app.language')
         PrestashopRuleTax = pool.get('prestashop.rule.tax')
@@ -29,7 +28,7 @@ class Product:
         if langs:
             lang = langs[0].website_language.prestashop_id
         else:
-            lang = 1 # Force lang ID 1
+            lang = 1  # Force lang ID 1
 
         app = shop.prestashop_website.prestashop_app
 
@@ -72,13 +71,12 @@ class Product:
 
     @classmethod
     def prestashop_product_dict2vals(self, shop, values):
-        """
+        '''
         Convert Prestashop values to Product
-
         :param shop: obj
         :param values: xml obj
         return dict
-        """
+        '''
         app = shop.prestashop_website.prestashop_app
 
         for value in values:
@@ -95,21 +93,20 @@ class Product:
 
     @classmethod
     def prestashop_product_esale_saleshops(self, app, products):
-        """
+        '''
         Get sale shops (websites)
-
         :param app: obj
         :param products: list
         return shops (list)
-        """
+        '''
         pool = Pool()
         PrestashopWebsite = pool.get('prestashop.website')
-        PrestashopExternalReferential = pool.get('prestashop.external.referential')
+        ExternalReferential = pool.get('prestashop.external.referential')
 
         shops = []
         websites = []
         for product in products:
-            website_ref = PrestashopExternalReferential.get_pts2try(app,
+            website_ref = ExternalReferential.get_pts2try(app,
             'prestashop.website', product.id_shop_default.pyval)
             websites.append(website_ref.try_id)
         if websites:
@@ -121,14 +118,13 @@ class Product:
 
     @classmethod
     def prestashop_product_esale_taxes(self, app, products, tax_include=False):
-        """
+        '''
         Get customer taxes and list price and cost price (with or without tax)
-
         :param app: obj
         :param products: list
         :param tax_include: bool
         return customer_taxes (list), list_price, cost_price
-        """
+        '''
         pool = Pool()
         PrestashopTax = pool.get('prestashop.tax')
 
@@ -169,7 +165,6 @@ class Product:
     def create_product_prestashop(self, shop, code):
         '''
         Get Prestashop product info and create
-
         :param shop: obj
         :param code: str
         return obj

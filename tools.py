@@ -1,6 +1,6 @@
 # encoding: utf-8
 #This file is part prestashop module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 
 import unicodedata
@@ -10,6 +10,7 @@ SRC_CHARS = u"""/*+?¿!&$[]{}@#`^<>=~%|\\"""
 POSTCODE_COUNTRY = {
     'es': 5,
 }
+
 
 def unaccent(text):
     if not (isinstance(text, str) or isinstance(text, unicode)):
@@ -35,14 +36,16 @@ def remove_newlines(text):
     '''
     return ' '.join(text.splitlines())
 
+
 def base_price_without_tax(price, rate):
     '''
     From price with taxes and return price without tax
     :param price: total price
     :param rate: rate tax
     '''
-    price = price/(1+rate)
+    price = price / (1 + rate)
     return '%.4f' % (price)
+
 
 def base_price_with_tax(price, rate):
     '''
@@ -50,8 +53,9 @@ def base_price_with_tax(price, rate):
     :param price: total price
     :param rate: rate tax
     '''
-    price = price*(1+rate)
+    price = price * (1 + rate)
     return '%.4f' % (price)
+
 
 def postcode_len(country, postcode):
     '''
@@ -61,5 +65,5 @@ def postcode_len(country, postcode):
     '''
     postcode_lenght = POSTCODE_COUNTRY.get(country.lower(), None)
     if postcode_lenght:
-        return str(postcode).zfill(postcode_lenght) 
+        return str(postcode).zfill(postcode_lenght)
     return postcode

@@ -1,6 +1,6 @@
 # encoding: utf-8
 #This file is part prestashop module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
@@ -22,8 +22,8 @@ PRODUCT_TYPE_OUT_ORDER_LINE = ['configurable']
 
 class SaleShop:
     __name__ = 'sale.shop'
-    prestashop_website = fields.Many2One('prestashop.website', 'Prestashop Website', 
-        readonly=True)
+    prestashop_website = fields.Many2One('prestashop.website',
+        'Prestashop Website', readonly=True)
     uri = fields.Char('Prestashop Uri',
         help='URI Prestashop Shop. http://yourdomainshop.com/ (with / at end)')
 
@@ -31,21 +31,21 @@ class SaleShop:
     def __setup__(cls):
         super(SaleShop, cls).__setup__()
         cls._error_messages.update({
-            'prestashop_product': 'Install Prestashop Product module to export ' \
-                'products to Prestashop',
+            'prestashop_product': 'Install Prestashop Product module to '
+                'export products to Prestashop',
             'prestashop_shop_uri': 'Shop Uri is empty. Add an uri in shop "%s"'
         })
 
     @classmethod
     def get_shop_app(cls):
-        '''Get Shop APP (tryton, prestashop, prestashop,...)'''
+        'Get Shop APP (tryton, prestashop, prestashop,...)'
         res = super(SaleShop, cls).get_shop_app()
-        res.append(('prestashop','Prestashop'))
+        res.append(('prestashop', 'Prestashop'))
         return res
 
     @classmethod
     def get_prestashop_state(cls, state):
-        '''Get subdivision (prestashop to tryton)'''
+        'Get subdivision (prestashop to tryton)'
         pool = Pool()
         PrestashopState = pool.get('prestashop.state')
 
@@ -63,7 +63,8 @@ class SaleShop:
 
     @classmethod
     def get_shop_user(self, shop):
-        '''Get user
+        '''
+        Get user
         User is not active change user defined in sale shop
         :param shop: object
         :return user
@@ -80,10 +81,11 @@ class SaleShop:
         return user
 
     def import_orders_prestashop(self, ofilter=None):
-        """Import Orders from Prestashop APP
+        '''
+        Import Orders from Prestashop APP
         :param shop: Obj
         :param ofilter: dict
-        """
+        '''
         pool = Pool()
         SaleShop = pool.get('sale.shop')
         Company = pool.get('company.company')
@@ -108,8 +110,10 @@ class SaleShop:
                 tz = pytz.timezone(timezone)
                 tzoffset = tz.utcoffset(ftime)
 
-            from_time = SaleShop.datetime_to_str(ftime + tzoffset if tzoffset else ftime)
-            to_time = SaleShop.datetime_to_str(ttime + tzoffset if tzoffset else ttime)
+            from_time = SaleShop.datetime_to_str(ftime + tzoffset if tzoffset
+                else ftime)
+            to_time = SaleShop.datetime_to_str(ttime + tzoffset if tzoffset
+                else ttime)
 
             created_filter = {}
             created_filter['from'] = from_time
@@ -143,24 +147,27 @@ class SaleShop:
             user = self.get_shop_user(self)
 
             db_name = Transaction().cursor.dbname
-            thread1 = threading.Thread(target=self.import_orders_prestashop_thread, 
+            thread1 = threading.Thread(
+                target=self.import_orders_prestashop_thread,
                 args=(db_name, user.id, self.id, orders,))
             thread1.start()
 
     @classmethod
     def pts2order_values(self, shop, values, currencies, carriers):
-        """
+        '''
         Convert prestashop order values to sale
-
         :param shop: obj
         :param values: xml obj
         :param currencies: xml obj
         :param carriers: xml obj
         return dict
-        """
-        untaxed_amount = Decimal(values.total_paid_tax_excl.pyval).quantize(Decimal('.01'))
-        total_amount = Decimal(values.total_paid_tax_incl.pyval).quantize(Decimal('.01'))
-        tax_amount = Decimal(total_amount-untaxed_amount).quantize(Decimal('.01'))
+        '''
+        untaxed_amount = Decimal(values.total_paid_tax_excl.pyval).quantize(
+            Decimal('.01'))
+        total_amount = Decimal(values.total_paid_tax_incl.pyval).quantize(
+            Decimal('.01'))
+        tax_amount = Decimal(total_amount - untaxed_amount).quantize(
+            Decimal('.01'))
 
         vals = {
             'party': values.id_customer.pyval,
@@ -189,14 +196,13 @@ class SaleShop:
 
     @classmethod
     def pts2lines_values(self, shop, values, products):
-        """
+        '''
         Convert prestashop values order lines to sale lines
-
         :param shop: obj
         :param values: xml obj
         :param products: xml obj
         return list(dict)
-        """
+        '''
         vals = []
         sequence = 1
 
@@ -207,7 +213,8 @@ class SaleShop:
             code = (line.product_id
                 and products[line.product_id.pyval]
                 or 'app.%s,product.%s' % (app.id, line.product_id.pyval))
-            price = Decimal(line.unit_price_tax_excl.pyval) # get price without tax
+             # get price without tax
+            price = Decimal(line.unit_price_tax_excl.pyval)
 
             values = {
                 'product': code,
@@ -223,23 +230,21 @@ class SaleShop:
 
     @classmethod
     def pts2extralines_values(self, shop, values):
-        """
+        '''
         Convert prestashop values to extra sale lines
         Super this method if in your Prestashop there are extra lines to create
         in sale order
-
         :param shop: obj
         :param values: xml obj
         return list(dict)
-        """
+        '''
         return []
 
     @classmethod
     def pts2party_values(self, shop, values, customers, invoice_addresses,
             delivery_addresses, countries):
-        """
+        '''
         Convert prestashop values to party
-
         :param shop: obj
         :param values: xml obj
         :param customers: xml obj
@@ -247,7 +252,7 @@ class SaleShop:
         :param delivery_addresses: xml obj
         :param countries: xml obj
         return dict
-        """
+        '''
         pool = Pool()
         eSaleAccountTaxRule = pool.get('esale.account.tax.rule')
 
@@ -297,7 +302,7 @@ class SaleShop:
                 if not tax.start_zip or not tax.end_zip:
                     continue
                 try:
-                    if (int(tax.start_zip) <= int(postcode) <= int(tax.end_zip)):
+                    if int(tax.start_zip) <= int(postcode) <= int(tax.end_zip):
                         tax_rule = tax
                         break
                 except:
@@ -319,29 +324,30 @@ class SaleShop:
         return vals
 
     @classmethod
-    def pts2invoice_values(self, shop, values, customers, invoice_addresses, countries):
-        """
+    def pts2invoice_values(self, shop, values, customers, invoice_addresses,
+            countries):
+        '''
         Convert prestashop values to invoice address
-
         :param shop: obj
         :param values: xml obj
         :param customers: xml obj
         :param invoice_addresses: xml obj
         :param countries: xml obj
         return dict
-        """
-
+        '''
         invoice = invoice_addresses.get(values.id_address_invoice.pyval)
         customer = customers.get(values.id_customer.pyval)
         email = customer.email.pyval
         name = party_name(invoice.firstname.pyval, invoice.lastname.pyval)
         if not name:
-            name = party_name(customer.firstname.pyval, customer.lastname.pyval)
+            name = party_name(customer.firstname.pyval,
+                customer.lastname.pyval)
         country = countries.get(invoice.id_country.pyval)
 
         vals = {
             'name': unaccent(name).title(),
-            'street': remove_newlines(unaccent(invoice.address1.pyval).title()),
+            'street':
+                remove_newlines(unaccent(invoice.address1.pyval).title()),
             'zip': '%s' % postcode_len(country, invoice.postcode),
             'city': unaccent(invoice.city.pyval).title(),
             'country': country,
@@ -354,18 +360,17 @@ class SaleShop:
         return vals
 
     @classmethod
-    def pts2shipment_values(self, shop, values, customers, delivery_addresses, countries):
-        """
+    def pts2shipment_values(self, shop, values, customers, delivery_addresses,
+            countries):
+        '''
         Convert prestashop values to shipment address
-
         :param shop: obj
         :param values: xml obj
         :param customers: xml obj
         :param delivery_addresses: xml obj
         :param countries: xml obj
         return dict
-        """
-
+        '''
         delivery = delivery_addresses.get(values.id_address_delivery.pyval)
         customer = customers.get(values.id_customer.pyval)
         email = customer.email.pyval
@@ -373,12 +378,14 @@ class SaleShop:
         name = party_name(delivery.firstname.pyval,
             delivery.lastname.pyval)
         if not name:
-            name = party_name(customer.firstname.pyval, customer.lastname.pyval)
+            name = party_name(customer.firstname.pyval,
+                customer.lastname.pyval)
         country = countries.get(delivery.id_country.pyval)
 
         vals = {
             'name': unaccent(name).title(),
-            'street': remove_newlines(unaccent(delivery.address1.pyval).title()),
+            'street':
+                remove_newlines(unaccent(delivery.address1.pyval).title()),
             'zip': '%s' % postcode_len(country, delivery.postcode),
             'city': unaccent(delivery.city.pyval).title(),
             'country': country,
@@ -391,13 +398,13 @@ class SaleShop:
         return vals
 
     def import_orders_prestashop_thread(self, db_name, user, shop, orders):
-        """Create orders from Prestashop APP
-
+        '''
+        Create orders from Prestashop APP
         :param db_name: str
         :param user: int
         :param shop: int
         :param orders: list
-        """
+        '''
         with Transaction().start(db_name, user):
             pool = Pool()
             SaleShop = pool.get('sale.shop')
@@ -466,28 +473,27 @@ class SaleShop:
                     continue
 
                 # Convert Prestashop order to dict
-                sale_values = self.pts2order_values(sale_shop, order, currencies, carriers)
-                lines_values = self.pts2lines_values(sale_shop, order, products)
-                extralines_values = self.pts2extralines_values(sale_shop, order)
-                party_values = self.pts2party_values(sale_shop, order, customers,
+                sale_vals = self.pts2order_values(sale_shop, order, currencies,
+                    carriers)
+                lines_vals = self.pts2lines_values(sale_shop, order, products)
+                extralines_vals = self.pts2extralines_values(sale_shop, order)
+                party_vals = self.pts2party_values(sale_shop, order, customers,
                     invoice_addresses, delivery_addresses, countries)
-                invoice_values = self.pts2invoice_values(sale_shop, order, customers,
-                    invoice_addresses, countries)
-                shipment_values = self.pts2shipment_values(sale_shop, order, customers,
-                    delivery_addresses, countries)
+                invoice_vals = self.pts2invoice_values(sale_shop, order,
+                    customers, invoice_addresses, countries)
+                shipment_vals = self.pts2shipment_values(sale_shop, order,
+                    customers, delivery_addresses, countries)
 
                 # Create order, lines, party and address
-                Sale.create_external_order(sale_shop, sale_values, 
-                    lines_values, extralines_values, party_values, 
-                    invoice_values, shipment_values)
+                Sale.create_external_order(sale_shop, sale_vals, lines_vals,
+                    extralines_vals, party_vals, invoice_vals, shipment_vals)
                 Transaction().cursor.commit()
 
             logging.getLogger('prestashop sale').info(
                 'Prestashop %s. End import sales' % (sale_shop.name))
 
     def export_state_prestashop(self):
-        """Export State sale to Prestashop
-        """
+        'Export State sale to Prestashop'
         now = datetime.now()
         date = self.esale_last_state_orders or now
 
@@ -505,18 +511,19 @@ class SaleShop:
                 'Prestashop %s. Start export %s state orders' % (
                 self.name, len(orders)))
             db_name = Transaction().cursor.dbname
-            thread1 = threading.Thread(target=self.export_state_prestashop_thread, 
+            thread1 = threading.Thread(
+                target=self.export_state_prestashop_thread,
                 args=(db_name, Transaction().user, self.id, sales,))
             thread1.start()
 
     def export_state_prestashop_thread(self, db_name, user, shop, sales):
-        """Export State sale to Prestashop APP
-
+        '''
+        Export State sale to Prestashop APP
         :param db_name: str
         :param user: int
         :param shop: int
         :param sales: list
-        """
+        '''
         with Transaction().start(db_name, user):
             pool = Pool()
             Sale = pool.get('sale.sale')
@@ -589,32 +596,37 @@ class SaleShop:
                 'Prestashop %s. End export state' % (sale_shop.name))
 
     def export_products_prestashop(self, shop):
-        """Export Products to Prestashop
+        '''
+        Export Products to Prestashop
         This option is available in prestashop_product module
-        """
+        '''
         self.raise_user_error('prestashop_product')
 
     def export_prices_prestashop(self, shop):
-        """Export Prices to Prestashop
+        '''
+        Export Prices to Prestashop
         This option is available in prestashop_product module
-        """
+        '''
         self.raise_user_error('prestashop_product')
 
     def export_stocks_prestashop(self, shop):
-        """Export Stocks to Prestashop
+        '''
+        Export Stocks to Prestashop
         This option is available in prestashop_product module
-        """
+        '''
         self.raise_user_error('prestashop_product')
 
     def export_images_prestashop(self, shop):
-        """Export Images to Prestashop
+        '''
+        Export Images to Prestashop
         This option is available in prestashop_product module
-        """
+        '''
         self.raise_user_error('prestashop_product')
 
     def export_menus_prestashop(self, shop, tpls=[]):
-        """Export Menus to Prestashop
+        '''
+        Export Menus to Prestashop
         :param shop: object
         :param tpls: list
-        """
+        '''
         self.raise_user_error('prestashop_product')
