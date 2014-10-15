@@ -3,6 +3,8 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 
+from lxml.objectify import NumberElement, NoneElement, StringElement, \
+    ObjectifiedElement
 import unicodedata
 
 SRC_CHARS = u"""/*+?¿!&$[]{}@#`^<>=~%|\\"""
@@ -67,3 +69,15 @@ def postcode_len(country, postcode):
     if postcode_lenght:
         return str(postcode).zfill(postcode_lenght)
     return postcode
+
+
+def xml2dict(xml_object):
+    dict_object = xml_object.__dict__
+    dict_object = {k: dict_object[k].pyval
+        if isinstance(dict_object[k],
+            (NumberElement, NoneElement, StringElement))
+        else xml2dict(dict_object[k])
+        if isinstance(dict_object[k], ObjectifiedElement)
+        else xml2dict(dict_object[k].associations)
+        for k in dict_object}
+    return dict_object
