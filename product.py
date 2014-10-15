@@ -162,7 +162,7 @@ class Product:
         return customer_taxes, list_price, cost_price
 
     @classmethod
-    def create_product_prestashop(self, shop, code):
+    def create_product_prestashop(cls, shop, code):
         '''
         Get Prestashop product info and create
         :param shop: obj
@@ -183,18 +183,18 @@ class Product:
                     'id': code.split(',')[1].split('.')[1]},
                 display='full')
 
-        tvals = self.prestashop_template_dict2vals(shop, products)
-        pvals = self.prestashop_product_dict2vals(shop, products)
+        tvals = cls.prestashop_template_dict2vals(shop, products)
+        pvals = cls.prestashop_product_dict2vals(shop, products)
 
         # Shops - websites
-        shops = self.prestashop_product_esale_saleshops(prestashop_app,
+        shops = cls.prestashop_product_esale_saleshops(prestashop_app,
             products)
         if shops:
             tvals['esale_saleshops'] = [('add', shops)]
 
         # Taxes and list price and cost price with or without taxes
         customer_taxes, list_price, cost_price = (
-            self.prestashop_product_esale_taxes(
+            cls.prestashop_product_esale_taxes(
                 prestashop_app, products, tax_include))
         if customer_taxes:
             tvals['customer_taxes'] = [('add', customer_taxes)]
