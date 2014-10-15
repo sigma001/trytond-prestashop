@@ -92,7 +92,7 @@ class Product:
         return {}
 
     @classmethod
-    def prestashop_product_esale_saleshops(self, app, products):
+    def prestashop_product_esale_saleshops(cls, products, app):
         '''
         Get sale shops (websites)
         :param app: obj
@@ -187,8 +187,8 @@ class Product:
         pvals = cls.prestashop_product_dict2vals(shop, products)
 
         # Shops - websites
-        shops = cls.prestashop_product_esale_saleshops(prestashop_app,
-            products)
+        shops = cls.prestashop_product_esale_saleshops(products,
+            prestashop_app)
         if shops:
             tvals['esale_saleshops'] = [('add', shops)]
 
