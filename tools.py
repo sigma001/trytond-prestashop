@@ -73,11 +73,26 @@ def postcode_len(country, postcode):
 
 def xml2dict(xml_object):
     dict_object = xml_object.__dict__
-    dict_object = {k: dict_object[k].pyval
+    dict_values = {k: dict_object[k].pyval
         if isinstance(dict_object[k],
             (NumberElement, NoneElement, StringElement))
         else xml2dict(dict_object[k])
         if isinstance(dict_object[k], ObjectifiedElement)
         else xml2dict(dict_object[k].associations)
         for k in dict_object}
-    return dict_object
+    values = {}
+    for value in dict_values:
+        if not isinstance(dict_values[value], dict):
+            values[value] = dict_values[value]
+        elif 'language' in dict_values[value]:
+            langs = {}
+            for k in xml_object.__getattr__(value).descendantpaths():
+                if 'language' in k:
+                    if '[' in k:
+                        lang_id = int(k.split('[')[1].split(']')[0])
+                    else:
+                        lang_id = 0
+                    langs[lang_id] = (
+                        xml_object.__getattr__(value).language[lang_id].pyval)
+            values[value] = langs
+    return values
