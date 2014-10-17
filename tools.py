@@ -92,7 +92,7 @@ def xml2dict(xml_object):
                         lang_id = int(k.split('[')[1].split(']')[0])
                     else:
                         lang_id = 0
-                    langs[lang_id] = (
+                    langs[lang_id + 1] = (
                         xml_object.__getattr__(value).language[lang_id].pyval)
             values[value] = langs
     return values
