@@ -2,7 +2,7 @@
 #This file is part prestashop module for Tryton.
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
-
+from lxml.etree import Element
 from lxml.objectify import NumberElement, NoneElement, StringElement, \
     ObjectifiedElement
 import unicodedata
@@ -96,3 +96,24 @@ def xml2dict(xml_object):
                         xml_object.__getattr__(value).language[lang_id].pyval)
             values[value] = langs
     return values
+
+
+def set_xml_attributes(xml_model, dict_values, delete_fields=None):
+    if not delete_fields:
+        delete_fields = []
+    for child in xml_model.getchildren():
+        if child.tag in delete_fields:
+                xml_model.__delattr__(child.tag)
+        elif child.tag in dict_values:
+            if isinstance(child, (NumberElement, NoneElement, StringElement)):
+                xml_model.__setattr__(child.tag, dict_values[child.tag])
+            else:
+                grandchild = child.getchildren()[0]
+                if grandchild.tag == 'language':
+                    tag = Element(child.tag)
+                    for lang in dict_values[child.tag]:
+                        language = Element('language', id='%s' % lang)
+                        language.text = dict_values[child.tag][lang]
+                        tag.append(language)
+                    xml_model.__delattr__(child.tag)
+                    xml_model.append(tag)
