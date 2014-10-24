@@ -594,7 +594,7 @@ class SaleShop:
             logging.getLogger('prestashop sale').info(
                 'Prestashop %s. End export state' % (sale_shop.name))
 
-    def export_products_prestashop(self):
+    def export_products_prestashop(self, tmpl=[]):
         '''
         Export Products to Prestashop
         This option is available in prestashop_product module
