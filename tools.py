@@ -111,7 +111,7 @@ def set_xml_attributes(xml_model, dict_values, delete_fields=None):
                 grandchild = child.getchildren()[0]
                 if grandchild.tag == 'language':
                     tag = Element(child.tag)
-                    for lang in dict_values[child.tag]:
+                    for lang in sorted(dict_values[child.tag]):
                         language = Element('language', id='%s' % lang)
                         language.text = dict_values[child.tag][lang]
                         tag.append(language)
