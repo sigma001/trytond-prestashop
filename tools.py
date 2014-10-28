@@ -104,6 +104,8 @@ def set_xml_attributes(xml_model, dict_values, delete_fields=None):
     for child in xml_model.getchildren():
         if child.tag in delete_fields:
                 xml_model.__delattr__(child.tag)
+        elif child.tag == 'id':
+            continue
         elif child.tag in dict_values:
             if isinstance(child, (NumberElement, NoneElement, StringElement)):
                 xml_model.__setattr__(child.tag, dict_values[child.tag])
