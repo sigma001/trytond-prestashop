@@ -112,7 +112,8 @@ class Product:
         if websites:
             prestashop_websites = PrestashopWebsite.browse(websites)
             for website in prestashop_websites:
-                shops.append(website.sale_shop[0].id)
+                if website.sale_shop:
+                    shops.append(website.sale_shop[0].id)
 
         return shops
 
