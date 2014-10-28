@@ -296,143 +296,152 @@ class PrestashopApp(ModelSQL, ModelView):
             if not app.prestashop_countries:
                 self.raise_user_error('add_countries')
 
-            client = app.get_prestashop_client()
+            for website in app.prestashop_websites:
+                for shop in website.sale_shop:
+                    with Transaction().set_context({
+                            'prestashop_uri': shop.uri
+                            }):
+                        client = app.get_prestashop_client()
 
-            ptaxes = client.taxes.get_list(filters={}, display='full')
-            prules = client.tax_rules.get_list(filters={}, display='full')
-            pgrups = client.tax_rule_groups.get_list(filters={},
-                display='full')
-            pcountries = client.countries.get_list(filters={}, display='full')
-            pstates = client.states.get_list(filters={}, display='full')
+                    ptaxes = client.taxes.get_list(filters={}, display='full')
+                    prules = client.tax_rules.get_list(filters={},
+                        display='full')
+                    pgrups = client.tax_rule_groups.get_list(filters={},
+                        display='full')
+                    pcountries = client.countries.get_list(filters={},
+                        display='full')
+                    pstates = client.states.get_list(filters={},
+                        display='full')
 
-            # Rules Group
-            for grup in pgrups:
-                groups = TaxRulesGroup.search([
-                    ('prestashop_app', '=', app),
-                    ('tax_rules_group_id', '=', '%s' % grup.id.pyval),
-                    ], limit=1)
-                if groups:
-                    continue
+                    # Rules Group
+                    for grup in pgrups:
+                        groups = TaxRulesGroup.search([
+                            ('prestashop_app', '=', app),
+                            ('tax_rules_group_id', '=', '%s' % grup.id.pyval),
+                            ], limit=1)
+                        if groups:
+                            continue
 
-                to_create_groups.append({
-                    'name': '%s' % grup.name.pyval,
-                    'tax_rules_group_id': '%s' % grup.id.pyval,
-                    'prestashop_app': app,
-                    })
-            if to_create_groups:
-                TaxRulesGroup.create(to_create_groups)
-            Transaction().cursor.commit()
+                        to_create_groups.append({
+                            'name': '%s' % grup.name.pyval,
+                            'tax_rules_group_id': '%s' % grup.id.pyval,
+                            'prestashop_app': app,
+                            })
+                    if to_create_groups:
+                        TaxRulesGroup.create(to_create_groups)
+                    Transaction().cursor.commit()
 
-            # Taxes
-            for tax in ptaxes:
-                ptaxes = Tax.search([
-                    ('prestashop_app', '=', app),
-                    ('tax_id', '=', '%s' % tax.id.pyval),
-                    ], limit=1)
-                if ptaxes:
-                    continue
+                    # Taxes
+                    for tax in ptaxes:
+                        ptaxes = Tax.search([
+                            ('prestashop_app', '=', app),
+                            ('tax_id', '=', '%s' % tax.id.pyval),
+                            ], limit=1)
+                        if ptaxes:
+                            continue
 
-                rate = (Decimal(tax.rate.pyval) / 100).quantize(Decimal('.01'))
+                        rate = (Decimal(tax.rate.pyval) / 100).quantize(
+                            Decimal('.01'))
 
-                account_taxes = AccountTax.search([
-                    ('rate', '=', rate),
-                    ('group.kind', 'in', ['sale', 'both']),
-                    ], limit=1)
-                if account_taxes:
-                    account_tax, = account_taxes
-                else:
-                    account_tax = None
-                    logging.getLogger('prestashop').warning(
-                        'Not found tax rate %s. Remember to select a tax' %
-                        tax.rate.pyval)
+                        account_taxes = AccountTax.search([
+                            ('rate', '=', rate),
+                            ('group.kind', 'in', ['sale', 'both']),
+                            ], limit=1)
+                        if account_taxes:
+                            account_tax, = account_taxes
+                        else:
+                            account_tax = None
+                            logging.getLogger('prestashop').warning('Not found'
+                                ' tax rate %s. Remember to select a tax' %
+                                tax.rate.pyval)
 
-                to_create_taxes.append({
-                    'prestashop_app': app,
-                    'name': '%s' % tax.name.language[0].pyval,
-                    'tax_id': '%s' % tax.id.pyval,
-                    'tax': account_tax,
-                    })
-            if to_create_taxes:
-                Tax.create(to_create_taxes)
-            Transaction().cursor.commit()
+                        to_create_taxes.append({
+                            'prestashop_app': app,
+                            'name': '%s' % tax.name.language[0].pyval,
+                            'tax_id': '%s' % tax.id.pyval,
+                            'tax': account_tax,
+                            })
+                    if to_create_taxes:
+                        Tax.create(to_create_taxes)
+                    Transaction().cursor.commit()
 
-            # Rules
-            for rule in prules:
+                    # Rules
+                    for rule in prules:
+                        prules = RuleTax.search([
+                            ('prestashop_app', '=', app),
+                            ('rule_tax_id', '=', '%s' % rule.id.pyval),
+                            ], limit=1)
+                        if prules:
+                            continue
 
-                prules = RuleTax.search([
-                    ('prestashop_app', '=', app),
-                    ('rule_tax_id', '=', '%s' % rule.id.pyval),
-                    ], limit=1)
-                if prules:
-                    continue
+                        papptaxes = Tax.search([
+                            ('prestashop_app', '=', app),
+                            ('tax_id', '=', '%s' % rule.id_tax.pyval),
+                            ], limit=1)
+                        if not papptaxes:
+                            logging.getLogger('prestashop').warning(
+                                'Not found tax %s in tax rule %s' %
+                                (rule.id_tax.pyval, rule.id.pyval))
+                            continue
+                        papptax, = papptaxes
 
-                papptaxes = Tax.search([
-                    ('prestashop_app', '=', app),
-                    ('tax_id', '=', '%s' % rule.id_tax.pyval),
-                    ], limit=1)
-                if not papptaxes:
-                    logging.getLogger('prestashop').warning(
-                        'Not found tax %s in tax rule %s' %
-                        (rule.id_tax.pyval, rule.id.pyval))
-                    continue
-                papptax, = papptaxes
+                        pgroups = TaxRulesGroup.search([
+                            ('prestashop_app', '=', app),
+                            ('tax_rules_group_id', '=', '%s' %
+                                rule.id_tax_rules_group.pyval),
+                            ], limit=1)
+                        if not pgroups:
+                            logging.getLogger('prestashop').warning(
+                                'Not found rules group tax %s in tax rule %s' %
+                                (rule.id_tax_rules_group.pyval, rule.id.pyval))
+                            continue
+                        pgroup, = pgroups
 
-                pgroups = TaxRulesGroup.search([
-                    ('prestashop_app', '=', app),
-                    ('tax_rules_group_id', '=', '%s' %
-                        rule.id_tax_rules_group.pyval),
-                    ], limit=1)
-                if not pgroups:
-                    logging.getLogger('prestashop').warning(
-                        'Not found rules group tax %s in tax rule %s' %
-                        (rule.id_tax_rules_group.pyval, rule.id.pyval))
-                    continue
-                pgroup, = pgroups
+                        subdivision = None
+                        if rule.id_state.pyval:
+                            for s in pstates:
+                                id_state = '%s' % s.id.pyval
+                                id_state_rule = '%s' % rule.id_state.pyval
+                                if id_state == id_state_rule:
+                                    subdivisions = Subdivision.search([
+                                        ('name', '=', '%s' % s.name.pyval),
+                                        ], limit=1)
+                                    if subdivisions:
+                                        subdivision, = subdivisions
 
-                subdivision = None
-                if rule.id_state.pyval:
-                    for s in pstates:
-                        id_state = '%s' % s.id.pyval
-                        id_state_rule = '%s' % rule.id_state.pyval
-                        if id_state == id_state_rule:
-                            subdivisions = Subdivision.search([
-                                ('name', '=', '%s' % s.name.pyval),
-                                ], limit=1)
-                            if subdivisions:
-                                subdivision, = subdivisions
+                        country = None
+                        if rule.id_country.pyval:
+                            for c in pcountries:
+                                id_country = '%s' % c.id.pyval
+                                id_country_rule = '%s' % rule.id_country.pyval
+                                if id_country == id_country_rule:
+                                    countries = Country.search([
+                                        ('code', '=', '%s' % c.iso_code.pyval),
+                                        ], limit=1)
+                                    if countries:
+                                        country, = countries
+                        if not country:
+                            logging.getLogger('prestashop').warning('Not found'
+                                ' country %s in tax rule %s. Add default '
+                                'country (edit)' %
+                                (rule.id_country.pyval, rule.id.pyval))
+                            country = app.prestashop_countries[0]
 
-                country = None
-                if rule.id_country.pyval:
-                    for c in pcountries:
-                        id_country = '%s' % c.id.pyval
-                        id_country_rule = '%s' % rule.id_country.pyval
-                        if id_country == id_country_rule:
-                            countries = Country.search([
-                                ('code', '=', '%s' % c.iso_code.pyval),
-                                ], limit=1)
-                            if countries:
-                                country, = countries
-                if not country:
-                    logging.getLogger('prestashop').warning(
-                        'Not found country %s in tax rule %s. Add default '
-                        'country (edit)' %
-                        (rule.id_country.pyval, rule.id.pyval))
-                    country = app.prestashop_countries[0]
+                        to_create_rules.append({
+                            'prestashop_app': app,
+                            'rule_tax_id': '%s' % rule.id.pyval,
+                            'id_tax_rules_group': ('%s' %
+                                rule.id_tax_rules_group.pyval),
+                            'prestashop_tax': papptax.id,
+                            'country': country,
+                            'subdivision': subdivision,
+                            'zip_from': '%s' % rule.zipcode_from.pyval,
+                            'zip_to': '%s' % rule.zipcode_to.pyval,
+                            'group': pgroup,
+                            })
 
-                to_create_rules.append({
-                    'prestashop_app': app,
-                    'rule_tax_id': '%s' % rule.id.pyval,
-                    'id_tax_rules_group': '%s' % rule.id_tax_rules_group.pyval,
-                    'prestashop_tax': papptax.id,
-                    'country': country,
-                    'subdivision': subdivision,
-                    'zip_from': '%s' % rule.zipcode_from.pyval,
-                    'zip_to': '%s' % rule.zipcode_to.pyval,
-                    'group': pgroup,
-                    })
-
-            if to_create_rules:
-                RuleTax.create(to_create_rules)
+                    if to_create_rules:
+                        RuleTax.create(to_create_rules)
             Transaction().cursor.commit()
 
     @classmethod
