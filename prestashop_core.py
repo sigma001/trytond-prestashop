@@ -234,38 +234,44 @@ class PrestashopApp(ModelSQL, ModelView):
 
             lang = langs[0].website_language.prestashop_id
 
-            client = app.get_prestashop_client()
-            prestashop_groups = client.groups.get_list(display='full')
-            customer_groups = CustomerGroup.search([
-                    ('prestashop_app', '=', app.id),
-                    ])
-            customer_groups = [cg.customer_group for cg in customer_groups]
-            values = [{
-                    'name': g.name.language[lang].pyval,
-                    'customer_group': g.id.pyval,
-                    'prestashop_app': app.id,
-                    }
-                for g in prestashop_groups
-                if g.id.pyval not in customer_groups
-                ]
-            customer_groups = CustomerGroup.create(values)
-            prestashop_groups = {g.id: p.id.pyval
-                for g in customer_groups
-                for p in prestashop_groups
-                if g.customer_group == p.id.pyval
-                }
-            for customer_group in customer_groups:
-                ExternalReferential.set_external_referential(
-                    app,
-                    'prestashop.customer.group',
-                    customer_group.id,
-                    prestashop_groups[customer_group.id])
-                logging.getLogger('prestashop').info(
-                    'Create Group %s. Prestashop APP %s.ID %s' % (
-                        prestashop_groups[customer_group.id],
-                        app.name,
-                        customer_group.id,
-                        ))
+            for website in app.prestashop_websites:
+                for shop in website.sale_shop:
+                    with Transaction().set_context({
+                            'prestashop_uri': shop.uri
+                            }):
+                        client = app.get_prestashop_client()
+                    prestashop_groups = client.groups.get_list(display='full')
+                    customer_groups = CustomerGroup.search([
+                            ('prestashop_app', '=', app.id),
+                            ])
+                    customer_groups = [cg.customer_group
+                        for cg in customer_groups]
+                    values = [{
+                            'name': g.name.language[lang].pyval,
+                            'customer_group': g.id.pyval,
+                            'prestashop_app': app.id,
+                            }
+                        for g in prestashop_groups
+                        if g.id.pyval not in customer_groups
+                        ]
+                    customer_groups = CustomerGroup.create(values)
+                    prestashop_groups = {g.id: p.id.pyval
+                        for g in customer_groups
+                        for p in prestashop_groups
+                        if g.customer_group == p.id.pyval
+                        }
+                    for customer_group in customer_groups:
+                        ExternalReferential.set_external_referential(
+                            app,
+                            'prestashop.customer.group',
+                            customer_group.id,
+                            prestashop_groups[customer_group.id])
+                        logging.getLogger('prestashop').info(
+                            'Create Group %s. Prestashop APP %s.ID %s' % (
+                                prestashop_groups[customer_group.id],
+                                app.name,
+                                customer_group.id,
+                                ))
 
     @classmethod
     @ModelView.button
