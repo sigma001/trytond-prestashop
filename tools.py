@@ -2,6 +2,7 @@
 #This file is part prestashop module for Tryton.
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
+from decimal import Decimal
 from lxml.etree import Element
 from lxml.objectify import NumberElement, NoneElement, StringElement, \
     ObjectifiedElement
@@ -108,6 +109,8 @@ def set_xml_attributes(xml_model, dict_values, delete_fields=None):
             continue
         elif child.tag in dict_values:
             if isinstance(child, (NumberElement, NoneElement, StringElement)):
+                if type(dict_values[child.tag]) == Decimal:
+                    dict_values[child.tag] = float(dict_values[child.tag])
                 xml_model.__setattr__(child.tag, dict_values[child.tag])
             else:
                 grandchild = child.getchildren()[0]
