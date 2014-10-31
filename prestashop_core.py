@@ -240,7 +240,14 @@ class PrestashopApp(ModelSQL, ModelView):
                             'prestashop_uri': shop.uri
                             }):
                         client = app.get_prestashop_client()
-                    prestashop_groups = client.groups.get_list(display='full')
+                    try:
+                        prestashop_groups = client.groups.get_list(
+                            display='full')
+                    except Exception as e:
+                        logging.getLogger('prestashop').info(
+                            'An exception occurred when importing groups: '
+                            '%s' % (e))
+                        continue
                     customer_groups = CustomerGroup.search([
                             ('prestashop_app', '=', app.id),
                             ])
