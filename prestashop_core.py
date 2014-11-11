@@ -1,13 +1,13 @@
 #This file is part prestashop module for Tryton.
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
+from lxml.etree import XMLSyntaxError
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 from trytond.pyson import Eval
 from requests import exceptions
 from decimal import Decimal
-
 import logging
 
 __all__ = ['PrestashopApp', 'PrestashopWebsite', 'PrestashopWebsiteLanguage',
@@ -175,13 +175,28 @@ class PrestashopApp(ModelSQL, ModelView):
                         app.name,
                         prestashop.id.pyval,
                         ))
+                websites.append(PrestashopWebsite(website_ref.try_id))
         return websites
 
-    @classmethod
-    def core_store_website_language(cls, websites, client):
+    def core_store_website_language(self, websites, client):
         pool = Pool()
         WebsiteLanguage = pool.get('prestashop.website.language')
         languages = client.languages.get_list(display='full')
+        if not languages and self.prestashop_websites:
+            for website in self.prestashop_websites:
+                for shop in website.sale_shop:
+                    with Transaction().set_context({
+                            'prestashop_uri': shop.uri
+                            }):
+                        client = self.get_prestashop_client()
+                    try:
+                        languages.extend(client.languages.get_list(
+                                display='full'))
+                    except XMLSyntaxError as e:
+                        logging.getLogger('prestashop').warning(
+                            'Error importing languages of shop %s: %s'
+                            % (shop.uri, e))
+                        continue
         website_languages = WebsiteLanguage.search([
                 ('prestashop_website', 'in', websites),
                 ])
@@ -211,7 +226,7 @@ class PrestashopApp(ModelSQL, ModelView):
         for app in apps:
             client = app.get_prestashop_client()
             websites.extend(cls.core_store_website(app, client))
-        cls.core_store_website_language(websites, client)
+            app.core_store_website_language(websites, client)
 
     @classmethod
     @ModelView.button
