@@ -177,12 +177,8 @@ class Product:
         client = prestashop_app.get_prestashop_client()
         tax_include = shop.esale_tax_include
 
-        products = client.products.get_list(filters={'reference': code},
+        products = client.products.get_list(filters={'reference': '%s' % code},
             display='full')
-        if not products:
-            products = client.products.get_list(filters={
-                    'id': code.split(',')[1].split('.')[1]},
-                display='full')
 
         tvals = cls.prestashop_template_dict2vals(shop, products)
         pvals = cls.prestashop_product_dict2vals(shop, products)

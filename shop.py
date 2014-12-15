@@ -178,7 +178,7 @@ class SaleShop:
             'carrier': carriers.get(values.id_carrier.pyval),
             'comment': values.gift_message.pyval,
             'currency': currencies.get(values.id_currency.pyval),
-            'reference_external': values.reference.pyval,
+            'reference_external': '%s' % values.reference.pyval,
             'sale_date': datetime.strptime(values.date_add.pyval,
                 '%Y-%m-%d %H:%M:%S').date(),
             'external_untaxed_amount': untaxed_amount,
@@ -210,14 +210,9 @@ class SaleShop:
         vals = []
         sequence = 1
 
-        app = shop.prestashop_website.prestashop_app
-
-        for order_row in values.associations.order_rows.iterchildren():
-            line = order_row
-            code = (line.product_id
-                and products[line.product_id.pyval]
-                or 'app.%s,product.%s' % (app.id, line.product_id.pyval))
-             # get price without tax
+        for line in values.associations.order_rows.iterchildren():
+            code = products['%s' % line.product_id.pyval]
+            #  get price without tax
             price = Decimal(line.unit_price_tax_excl.pyval)
 
             values = {
@@ -432,7 +427,8 @@ class SaleShop:
                 message = ('Prestashop %s. Error importing product: %s.' %
                     (sale_shop.name, e))
                 logging.getLogger('prestashop').error(message)
-            products = {p.id.pyval: p.reference.pyval for p in products}
+            products = {'%s' % p.id.pyval: '%s' % p.reference.pyval
+                for p in products}
 
             customer_ids = '|'.join({'%s' % o.id_customer.pyval
                     for o in orders})
@@ -468,7 +464,7 @@ class SaleShop:
             currencies = {c.id.pyval: c.iso_code.pyval for c in currencies}
 
             for order in orders:
-                reference = order.reference.pyval
+                reference = '%s' % order.reference.pyval
 
                 sales = Sale.search([
                     ('reference_external', '=', reference),
