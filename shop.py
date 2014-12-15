@@ -126,11 +126,16 @@ class SaleShop:
         with Transaction().set_context({'prestashop_uri': self.uri}):
             client = ptsapp.get_prestashop_client()
 
-        orders = client.orders.get_list(
-            filters={
-                'date_upd': '{0},{1}'.format(from_time, to_time)
-                }, date=1, display='full',
-            )
+        try:
+            orders = client.orders.get_list(
+                filters={
+                    'date_upd': '{0},{1}'.format(from_time, to_time)
+                    }, date=1, display='full',
+                )
+        except Exception as e:
+            logging.getLogger('prestashop').info(
+                'An exception occurred when importing sales: '
+                '%s' % (e))
 
         #~ Update date last import
         self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
@@ -419,9 +424,14 @@ class SaleShop:
                 for r in o.associations.order_rows.iterchildren()]
 
             product_ids = '|'.join({'%s' % l.product_id.pyval for l in lines})
-            products = client.products.get_list(
-                filters={'id': product_ids},
-                display=['id', 'reference'])
+            try:
+                products = client.products.get_list(
+                    filters={'id': product_ids},
+                    display=['id', 'reference'])
+            except Exception, e:
+                message = ('Prestashop %s. Error importing product: %s.' %
+                    (sale_shop.name, e))
+                logging.getLogger('prestashop').error(message)
             products = {p.id.pyval: p.reference.pyval for p in products}
 
             customer_ids = '|'.join({'%s' % o.id_customer.pyval
