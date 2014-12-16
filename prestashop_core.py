@@ -237,14 +237,16 @@ class PrestashopApp(ModelSQL, ModelView):
         '''
         PrestashopAppLanguage = Pool().get('prestashop.app.language')
 
+        logger = logging.getLogger('prestashop')
+
         for app in apps:
             langs = PrestashopAppLanguage.search([
                 ('default', '=', True),
                 ('app', '=', app.id),
                 ])
             if not langs:
-                logging.getLogger('prestashop').error(
-                    'Configure Prestashop %s APP default language', app.name)
+                logger.error('Configure Prestashop %s APP default language',
+                    app.name)
                 continue
 
             lang = langs[0].website_language.prestashop_id
@@ -263,14 +265,14 @@ class PrestashopApp(ModelSQL, ModelView):
         ExternalReferential = pool.get('prestashop.external.referential')
         CustomerGroup = pool.get('prestashop.customer.group')
 
+        logger = logging.getLogger('prestashop')
+
         with Transaction().set_context({'prestashop_uri': shop.uri}):
             client = app.get_prestashop_client()
         try:
             prestashop_groups = client.groups.get_list(display='full')
         except Exception as e:
-            logging.getLogger('prestashop').info(
-                'An exception occurred when importing groups: '
-                '%s', e)
+            logger.error('An exception occurred when importing groups: %s', e)
             return
         customer_groups = CustomerGroup.search([('prestashop_app', '=',
             app.id)])
@@ -294,10 +296,9 @@ class PrestashopApp(ModelSQL, ModelView):
             ExternalReferential.set_external_referential(app,
                 'prestashop.customer.group', customer_group.id,
                 prestashop_groups[customer_group.id])
-            logging.getLogger('prestashop').info(
-                'Create Group %s. Prestashop APP %s.ID %s',
-                    prestashop_groups[customer_group.id], app.name,
-                    customer_group.id)
+            logger.info('Create Group %s. Prestashop APP %s.ID %s',
+                prestashop_groups[customer_group.id], app.name,
+                customer_group.id)
 
     @classmethod
     @ModelView.button
