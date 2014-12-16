@@ -249,7 +249,7 @@ class PrestashopApp(ModelSQL, ModelView):
                     app.name)
                 continue
 
-            lang = langs[0].website_language.prestashop_id
+            lang = langs[0].website_language
 
             for website in app.prestashop_websites:
                 for shop in website.sale_shop:
@@ -274,12 +274,23 @@ class PrestashopApp(ModelSQL, ModelView):
         except Exception as e:
             logger.error('An exception occurred when importing groups: %s', e)
             return
+
+        for group in prestashop_groups:
+            ps_lang_ids = [int(tag.attrib['id']) for tag in group.name.language]
+            if lang.prestashop_id not in ps_lang_ids:
+                logger.error('Application %s, website %s, shop %s: lang %s '
+                    "isn't available", app.name, website.name, shop.name,
+                    lang.name)
+                return
+            # languages are the same for all groups: check only first group
+            break
+
         customer_groups = CustomerGroup.search([('prestashop_app', '=',
             app.id)])
         customer_groups = [cg.customer_group for cg in customer_groups]
         values = [{
                 'name': next((tag.pyval for tag in g.name.language
-                    if int(tag.attrib['id']) == lang)),
+                    if int(tag.attrib['id']) == lang.prestashop_id)),
                 'customer_group': g.id.pyval,
                 'prestashop_app': app.id,
                 }
