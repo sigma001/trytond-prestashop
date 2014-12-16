@@ -235,10 +235,7 @@ class PrestashopApp(ModelSQL, ModelView):
         Import Prestashop Group to Tryton
         Only create new values if not exist; not update or delete
         '''
-        pool = Pool()
-        PrestashopAppLanguage = pool.get('prestashop.app.language')
-        ExternalReferential = pool.get('prestashop.external.referential')
-        CustomerGroup = pool.get('prestashop.customer.group')
+        PrestashopAppLanguage = Pool().get('prestashop.app.language')
 
         for app in apps:
             langs = PrestashopAppLanguage.search([
@@ -254,50 +251,53 @@ class PrestashopApp(ModelSQL, ModelView):
 
             for website in app.prestashop_websites:
                 for shop in website.sale_shop:
-                    with Transaction().set_context({
-                            'prestashop_uri': shop.uri
-                            }):
-                        client = app.get_prestashop_client()
-                    try:
-                        prestashop_groups = client.groups.get_list(
-                            display='full')
-                    except Exception as e:
-                        logging.getLogger('prestashop').info(
-                            'An exception occurred when importing groups: '
-                            '%s', e)
-                        continue
-                    customer_groups = CustomerGroup.search([
-                            ('prestashop_app', '=', app.id),
-                            ])
-                    customer_groups = [cg.customer_group
-                        for cg in customer_groups]
-                    values = [{
-                            'name': next((tag.pyval for tag in g.name.language
-                                if int(tag.attrib['id']) == lang)),
-                            'customer_group': g.id.pyval,
-                            'prestashop_app': app.id,
-                            }
-                        for g in prestashop_groups
-                        if g.id.pyval not in customer_groups
-                        ]
-                    customer_groups = CustomerGroup.create(values)
-                    prestashop_groups = {g.id: p.id.pyval
-                        for g in customer_groups
-                        for p in prestashop_groups
-                        if g.customer_group == p.id.pyval
-                        }
-                    for customer_group in customer_groups:
-                        ExternalReferential.set_external_referential(
-                            app,
-                            'prestashop.customer.group',
-                            customer_group.id,
-                            prestashop_groups[customer_group.id])
-                        logging.getLogger('prestashop').info(
-                            'Create Group %s. Prestashop APP %s.ID %s',
-                                prestashop_groups[customer_group.id],
-                                app.name,
-                                customer_group.id
-                                )
+                    cls.import_customer_group(app, website, shop, lang)
+
+    @classmethod
+    def import_customer_group(cls, app, website, shop, lang):
+        '''
+        Import Prestashop Group of a shop to Tryton
+        Only create new values if not exist; not update or delete
+        '''
+        pool = Pool()
+        ExternalReferential = pool.get('prestashop.external.referential')
+        CustomerGroup = pool.get('prestashop.customer.group')
+
+        with Transaction().set_context({'prestashop_uri': shop.uri}):
+            client = app.get_prestashop_client()
+        try:
+            prestashop_groups = client.groups.get_list(display='full')
+        except Exception as e:
+            logging.getLogger('prestashop').info(
+                'An exception occurred when importing groups: '
+                '%s', e)
+            return
+        customer_groups = CustomerGroup.search([('prestashop_app', '=',
+            app.id)])
+        customer_groups = [cg.customer_group for cg in customer_groups]
+        values = [{
+                'name': next((tag.pyval for tag in g.name.language
+                    if int(tag.attrib['id']) == lang)),
+                'customer_group': g.id.pyval,
+                'prestashop_app': app.id,
+                }
+            for g in prestashop_groups
+            if g.id.pyval not in customer_groups
+            ]
+        customer_groups = CustomerGroup.create(values)
+        prestashop_groups = {g.id: p.id.pyval
+            for g in customer_groups
+            for p in prestashop_groups
+            if g.customer_group == p.id.pyval
+            }
+        for customer_group in customer_groups:
+            ExternalReferential.set_external_referential(app,
+                'prestashop.customer.group', customer_group.id,
+                prestashop_groups[customer_group.id])
+            logging.getLogger('prestashop').info(
+                'Create Group %s. Prestashop APP %s.ID %s',
+                    prestashop_groups[customer_group.id], app.name,
+                    customer_group.id)
 
     @classmethod
     @ModelView.button
