@@ -66,6 +66,8 @@ def postcode_len(country, postcode):
     In some postcodes started with 0. In this examle, 08720 return 8720.
     This method add len acccording postcode lenght to the country
     '''
+    if not country:
+        return ''
     postcode_lenght = POSTCODE_COUNTRY.get(country.lower(), None)
     if postcode_lenght:
         return str(postcode).zfill(postcode_lenght)

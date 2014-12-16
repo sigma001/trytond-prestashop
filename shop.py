@@ -136,6 +136,7 @@ class SaleShop:
             logging.getLogger('prestashop').info(
                 'An exception occurred when importing sales: '
                 '%s' % (e))
+            return
 
         #~ Update date last import
         self.write([self], {'esale_from_orders': now, 'esale_to_orders': None})
@@ -211,19 +212,21 @@ class SaleShop:
         sequence = 1
 
         for line in values.associations.order_rows.iterchildren():
-            code = products['%s' % line.product_id.pyval]
-            #  get price without tax
-            price = Decimal(line.unit_price_tax_excl.pyval)
+            code = '%s' % line.product_id.pyval
+            if code in products:
+                code = products[code]
+                #  get price without tax
+                price = Decimal(line.unit_price_tax_excl.pyval)
 
-            values = {
-                'product': code,
-                'quantity': Decimal(line.product_quantity.pyval),
-                'description': line.product_name.pyval,
-                'unit_price': price.quantize(Decimal('.01')),
-                'sequence': sequence,
-                }
-            vals.append(values)
-            sequence += 1
+                values = {
+                    'product': code,
+                    'quantity': Decimal(line.product_quantity.pyval),
+                    'description': line.product_name.pyval,
+                    'unit_price': price.quantize(Decimal('.01')),
+                    'sequence': sequence,
+                    }
+                vals.append(values)
+                sequence += 1
 
         return vals
 
@@ -256,29 +259,35 @@ class SaleShop:
         eSaleAccountTaxRule = pool.get('esale.account.tax.rule')
 
         customer = customers.get(values.id_customer.pyval)
+        if customer is None:
+            return {}
         firstname = customer.firstname.pyval
         lastname = customer.lastname.pyval
         invoice = invoice_addresses.get(values.id_address_invoice.pyval)
         delivery = delivery_addresses.get(values.id_address_delivery.pyval)
 
         vals = {
-            'name': unaccent(invoice.company.pyval
-                and invoice.company.pyval
-                or party_name(firstname, lastname)).title(),
+            'name': invoice is not None
+                and unaccent(invoice.company.pyval).title()
+                or party_name(firstname, lastname).title(),
             'esale_email': customer.email.pyval,
             }
-        if invoice.vat_number.pyval:
+        if invoice is not None and invoice.vat_number.pyval:
             vals['vat_number'] = '%s' % invoice.vat_number.pyval
-        elif delivery.vat_number.pyval:
+        elif delivery is not None and delivery.vat_number.pyval:
             vals['vat_number'] = '%s' % delivery.vat_number.pyval
+        else:
+            vals['vat_number'] = None
 
         country = None
-        if invoice.id_country:
+        if invoice is not None and invoice.id_country:
             country = countries.get(invoice.id_country.pyval)
             vals['vat_country'] = country
-        elif delivery.id_country:
+        elif delivery is not None and delivery.id_country:
             country = countries.get(delivery.id_country.pyval)
             vals['vat_country'] = country
+        else:
+            vals['vat_country'] = None
 
         # Add customer/supplier tax rule
         # 1. Search Tax Rule from Billing Address State ID
@@ -287,7 +296,8 @@ class SaleShop:
         tax_rule = None
         taxe_rules = eSaleAccountTaxRule.search([])
 
-        subdivision = self.get_prestashop_state(invoice.id_state.pyval)
+        subdivision = (invoice is not None
+            and self.get_prestashop_state(invoice.id_state.pyval) or None)
         if subdivision:
             tax_rules = eSaleAccountTaxRule.search([
                 ('subdivision', '=', subdivision),
@@ -295,7 +305,7 @@ class SaleShop:
             if tax_rules:
                 tax_rule, = tax_rules
 
-        postcode = invoice.postcode
+        postcode = invoice is not None and invoice.postcode or None
         if postcode and not tax_rule:
             for tax in taxe_rules:
                 if not tax.start_zip or not tax.end_zip:
@@ -336,21 +346,29 @@ class SaleShop:
         '''
         invoice = invoice_addresses.get(values.id_address_invoice.pyval)
         customer = customers.get(values.id_customer.pyval)
+        if customer is None:
+            return {}
         email = customer.email.pyval
-        name = party_name(invoice.firstname.pyval, invoice.lastname.pyval)
-        if not name:
+        name = (invoice is not None
+            and party_name(invoice.firstname.pyval, invoice.lastname.pyval)
+            or None)
+        if name is None:
             name = party_name(customer.firstname.pyval,
-                customer.lastname.pyval)
-        country = countries.get(invoice.id_country.pyval)
+                    customer.lastname.pyval)
+        country = (invoice is not None
+            and countries.get(invoice.id_country.pyval) or None)
 
         vals = {
             'name': unaccent(name).title(),
-            'street':
-                remove_newlines(unaccent(invoice.address1.pyval).title()),
-            'zip': '%s' % postcode_len(country, invoice.postcode),
-            'city': unaccent(invoice.city.pyval).title(),
+            'street': invoice is not None
+                and remove_newlines(unaccent(invoice.address1.pyval).title())
+                or None,
+            'zip': invoice is not None
+                and '%s' % postcode_len(country, invoice.postcode) or None,
+            'city': invoice is not None
+                and unaccent(invoice.city.pyval).title() or None,
             'country': country,
-            'phone': '%s' % invoice.phone,
+            'phone': invoice is not None and '%s' % invoice.phone or None,
             'fax': None,
             'email': email,
             'invoice': True,
@@ -372,23 +390,29 @@ class SaleShop:
         '''
         delivery = delivery_addresses.get(values.id_address_delivery.pyval)
         customer = customers.get(values.id_customer.pyval)
+        if customer is None:
+            return {}
         email = customer.email.pyval
 
-        name = party_name(delivery.firstname.pyval,
-            delivery.lastname.pyval)
+        name = (delivery is not None
+            and party_name(delivery.firstname.pyval, delivery.lastname.pyval)
+            or None)
         if not name:
             name = party_name(customer.firstname.pyval,
                 customer.lastname.pyval)
-        country = countries.get(delivery.id_country.pyval)
+        country = (delivery is not None
+            and countries.get(delivery.id_country.pyval) or None)
 
         vals = {
             'name': unaccent(name).title(),
-            'street':
-                remove_newlines(unaccent(delivery.address1.pyval).title()),
-            'zip': '%s' % postcode_len(country, delivery.postcode),
-            'city': unaccent(delivery.city.pyval).title(),
+            'street': (delivery is not None
+                and remove_newlines(unaccent(delivery.address1.pyval).title())
+                or None),
+            'zip': (delivery is not None
+                and '%s' % postcode_len(country, delivery.postcode) or None),
+            'city': delivery and unaccent(delivery.city.pyval).title() or None,
             'country': country,
-            'phone': '%s' % delivery.phone,
+            'phone': delivery is not None and '%s' % delivery.phone or None,
             'fax': None,
             'email': email,
             'delivery': True,
