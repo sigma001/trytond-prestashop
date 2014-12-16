@@ -244,7 +244,7 @@ class PrestashopApp(ModelSQL, ModelView):
             langs = PrestashopAppLanguage.search([('default', '=', True)])
             if not langs:
                 logging.getLogger('prestashop').error(
-                    'Configure Prestashop %s APP Languages' % (app.name))
+                    'Configure Prestashop %s APP default language' % (app.name))
                 continue
 
             lang = langs[0].website_language.prestashop_id
