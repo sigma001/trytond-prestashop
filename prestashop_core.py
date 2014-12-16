@@ -272,7 +272,8 @@ class PrestashopApp(ModelSQL, ModelView):
                     customer_groups = [cg.customer_group
                         for cg in customer_groups]
                     values = [{
-                            'name': g.name.language[lang].pyval,
+                            'name': next((tag.pyval for tag in g.name.language
+                                if int(tag.attrib['id']) == lang)),
                             'customer_group': g.id.pyval,
                             'prestashop_app': app.id,
                             }
