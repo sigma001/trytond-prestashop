@@ -241,7 +241,10 @@ class PrestashopApp(ModelSQL, ModelView):
         CustomerGroup = pool.get('prestashop.customer.group')
 
         for app in apps:
-            langs = PrestashopAppLanguage.search([('default', '=', True)])
+            langs = PrestashopAppLanguage.search([
+                ('default', '=', True),
+                ('app', '=', app.id),
+                ])
             if not langs:
                 logging.getLogger('prestashop').error(
                     'Configure Prestashop %s APP default language' % (app.name))
