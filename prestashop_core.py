@@ -247,7 +247,7 @@ class PrestashopApp(ModelSQL, ModelView):
                 ])
             if not langs:
                 logging.getLogger('prestashop').error(
-                    'Configure Prestashop %s APP default language' % (app.name))
+                    'Configure Prestashop %s APP default language', app.name)
                 continue
 
             lang = langs[0].website_language.prestashop_id
@@ -264,7 +264,7 @@ class PrestashopApp(ModelSQL, ModelView):
                     except Exception as e:
                         logging.getLogger('prestashop').info(
                             'An exception occurred when importing groups: '
-                            '%s' % (e))
+                            '%s', e)
                         continue
                     customer_groups = CustomerGroup.search([
                             ('prestashop_app', '=', app.id),
@@ -293,11 +293,11 @@ class PrestashopApp(ModelSQL, ModelView):
                             customer_group.id,
                             prestashop_groups[customer_group.id])
                         logging.getLogger('prestashop').info(
-                            'Create Group %s. Prestashop APP %s.ID %s' % (
+                            'Create Group %s. Prestashop APP %s.ID %s',
                                 prestashop_groups[customer_group.id],
                                 app.name,
-                                customer_group.id,
-                                ))
+                                customer_group.id
+                                )
 
     @classmethod
     @ModelView.button
