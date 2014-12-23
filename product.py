@@ -1,9 +1,11 @@
 #This file is part prestashop module for Tryton.
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
+from lxml import objectify
 from trytond.pool import Pool, PoolMeta
 from decimal import Decimal
 from trytond.modules.prestashop.tools import base_price_without_tax
+from trytond.transaction import Transaction
 
 __all__ = ['Product']
 __metaclass__ = PoolMeta
@@ -36,7 +38,9 @@ class Product:
             # calculate price without tax (first tax in default taxes app)
             # because prestashop price is with tax and do not have
             # price without taxes (calculate)
-            price = Decimal(value.price.pyval).quantize(Decimal('.01'))
+            price = Decimal(
+                getattr(value, 'price', False) and value.price.pyval or 1.0
+                ).quantize(Decimal('.01'))
 
             # default tax: search tax by country or default tax app
             default_tax = None
@@ -77,18 +81,13 @@ class Product:
         :param values: xml obj
         return dict
         '''
-        app = shop.prestashop_website.prestashop_app
 
         for value in values:
-            if value.reference.pyval:
+            if getattr(value, 'reference', False):
                 vals = {
                     'code': '%s' % value.reference.pyval,
                     }
-            else:
-                vals = {
-                    'code': '%s.%s' % (app.id, value.id.pyval),
-                    }
-            return vals
+                return vals
         return {}
 
     @classmethod
@@ -173,26 +172,36 @@ class Product:
         pool = Pool()
         Template = pool.get('product.template')
 
-        prestashop_app = shop.prestashop_website.prestashop_app
-        client = prestashop_app.get_prestashop_client()
+        app = shop.prestashop_website.prestashop_app
+        with Transaction().set_context({
+                'prestashop_uri': shop.uri
+                }):
+            client = app.get_prestashop_client()
         tax_include = shop.esale_tax_include
 
         products = client.products.get_list(filters={'reference': '%s' % code},
             display='full')
 
-        tvals = cls.prestashop_template_dict2vals(shop, products)
-        pvals = cls.prestashop_product_dict2vals(shop, products)
+        if products:
+            tvals = cls.prestashop_template_dict2vals(shop, products)
+            pvals = cls.prestashop_product_dict2vals(shop, products)
+        elif code.startswith('payment'):
+            tvals = {
+                'name': code.split('_')[1],
+                'list_price': Decimal('1.0').quantize(Decimal('.01')),
+                'cost_price': Decimal('1.0').quantize(Decimal('.01')),
+                'esale_shortdescription': code.split('_')[1],
+                'esale_slug': code,
+                }
+            pvals = {
+                'code': '%s' % code,
+                }
 
-        # Shops - websites
-        shops = cls.prestashop_product_esale_saleshops(products,
-            prestashop_app)
-        if shops:
-            tvals['esale_saleshops'] = [('add', shops)]
+        tvals['esale_saleshops'] = [('add', [shop])]
 
         # Taxes and list price and cost price with or without taxes
         customer_taxes, list_price, cost_price = (
-            cls.prestashop_product_esale_taxes(
-                prestashop_app, products, tax_include))
+            cls.prestashop_product_esale_taxes(app, products, tax_include))
         if customer_taxes:
             tvals['customer_taxes'] = [('add', customer_taxes)]
         if list_price:

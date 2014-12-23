@@ -174,9 +174,14 @@ class SaleShop:
         tax_amount = Decimal(total_amount - untaxed_amount).quantize(
             Decimal('.01'))
 
+        if values.id_carrier.pyval in carriers:
+            carrier = carriers[values.id_carrier.pyval].name.pyval
+        else:
+            carrier = None
+
         vals = {
             'party': values.id_customer.pyval,
-            'carrier': carriers.get(values.id_carrier.pyval),
+            'carrier': carrier,
             'comment': values.gift_message.pyval,
             'currency': currencies.get(values.id_currency.pyval),
             'reference_external': '%s' % values.reference.pyval,
@@ -185,7 +190,7 @@ class SaleShop:
             'external_untaxed_amount': untaxed_amount,
             'external_tax_amount': tax_amount,
             'external_total_amount': total_amount,
-            'external_shipment_amount': values.total_shipping.pyval
+            'external_shipment_amount': values.total_shipping_tax_excl.pyval
                 and Decimal(values.total_shipping.pyval).quantize(
                     Decimal('.01'))
                 or None,
@@ -240,7 +245,26 @@ class SaleShop:
         :param values: xml obj
         return list(dict)
         '''
-        return []
+        vlist = []
+#         unit_price = Decimal(values.total_shipping_tax_excl.pyval)
+#         carrier = carriers.get(values.id_carrier.pyval)
+#         vals = {
+#             'product': 'carrier_%s' % carrier.id_reference.pyval,
+#             'quantity': Decimal('1.0'),
+#             'description': carrier.delay.language[0],
+#             'unit_price': unit_price.quantize(Decimal('.01')),
+#             }
+#         vlist.append(vals)
+        payment_commission = (values.total_paid_real.pyval
+            - values.total_products_wt.pyval - values.total_shipping) / 1.21
+        vals = {
+            'product': 'payment_%s' % values.payment.pyval,
+            'quantity': Decimal('1.0'),
+            'description': '%s' % values.payment.pyval,
+            'unit_price': Decimal(payment_commission).quantize(Decimal('.01')),
+            }
+        vlist.append(vals)
+        return vlist
 
     @classmethod
     def pts2party_values(self, shop, values, customers, invoice_addresses,
@@ -479,17 +503,17 @@ class SaleShop:
                 display=['id', 'iso_code'])
             countries = {c.id.pyval: c.iso_code.pyval for c in countries}
 
-            carriers = client.carriers.get_list(
-                display=['id', 'name'])
-            carriers = {c.id.pyval: c.name.pyval for c in carriers}
-
             currencies = client.currencies.get_list(
                 display=['id', 'iso_code'])
             currencies = {c.id.pyval: c.iso_code.pyval for c in currencies}
 
+            carrier_ids = '|'.join({'%s' % o.id_carrier.pyval for o in orders})
+            carriers = client.carriers.get_list(filters={'id': carrier_ids},
+                display='full')
+            carriers = {c.id.pyval: c for c in carriers}
+
             for order in orders:
                 reference = '%s' % order.reference.pyval
-
                 sales = Sale.search([
                     ('reference_external', '=', reference),
                     ('shop', '=', sale_shop),
