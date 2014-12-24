@@ -66,9 +66,6 @@ class Product:
                 'list_price': price,
                 'cost_price': Decimal(
                     value.wholesale_price.pyval).quantize(Decimal('.01')),
-                'esale_shortdescription': '%s' %
-                    value.description_short.language[lang].pyval,
-                'esale_slug': '%s' % value.link_rewrite.language[lang].pyval,
                 }
             return vals
         return {}
