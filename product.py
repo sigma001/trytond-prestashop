@@ -187,8 +187,6 @@ class Product:
                 'name': code.split('_')[1],
                 'list_price': Decimal('1.0').quantize(Decimal('.01')),
                 'cost_price': Decimal('1.0').quantize(Decimal('.01')),
-                'esale_shortdescription': code.split('_')[1],
-                'esale_slug': code,
                 }
             pvals = {
                 'code': '%s' % code,
