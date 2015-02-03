@@ -255,7 +255,11 @@ class SaleShop:
 #             'unit_price': unit_price.quantize(Decimal('.01')),
 #             }
 #         vlist.append(vals)
-        payment_commission = (values.total_paid_real.pyval
+        total_paid = max(values.total_paid_real.pyval,
+            values.total_paid_tax_incl.pyval,
+            values.total_paid.pyval)
+
+        payment_commission = (total_paid
             - values.total_products_wt.pyval - values.total_shipping) / 1.21
         vals = {
             'product': 'payment_%s' % values.payment.pyval,
