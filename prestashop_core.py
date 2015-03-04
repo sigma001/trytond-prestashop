@@ -182,7 +182,7 @@ class PrestashopApp(ModelSQL, ModelView):
         pool = Pool()
         WebsiteLanguage = pool.get('prestashop.website.language')
         languages = client.languages.get_list(display='full')
-        if not languages and self.prestashop_websites:
+        if self.prestashop_websites:
             for website in self.prestashop_websites:
                 for shop in website.sale_shop:
                     with Transaction().set_context({
@@ -222,10 +222,9 @@ class PrestashopApp(ModelSQL, ModelView):
         - Websites
         - Languages
         '''
-        websites = []
         for app in apps:
             client = app.get_prestashop_client()
-            websites.extend(cls.core_store_website(app, client))
+            websites = cls.core_store_website(app, client)
             app.core_store_website_language(websites, client)
 
     @classmethod
