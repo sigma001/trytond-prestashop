@@ -150,11 +150,12 @@ class SaleShop:
                 self.name, len(orders)))
 
             user = self.get_shop_user()
-
             db_name = Transaction().cursor.dbname
+            context = Transaction().context
+
             thread1 = threading.Thread(
                 target=self.import_orders_prestashop_thread,
-                args=(db_name, user.id, self.id, orders,))
+                args=(db_name, user.id, self.id, orders, context,))
             thread1.start()
 
     @classmethod
@@ -448,15 +449,16 @@ class SaleShop:
 
         return vals
 
-    def import_orders_prestashop_thread(self, db_name, user, shop, orders):
+    def import_orders_prestashop_thread(self, db_name, user, shop, orders, context={}):
         '''
         Create orders from Prestashop APP
         :param db_name: str
         :param user: int
         :param shop: int
         :param orders: list
+        :param context: dict
         '''
-        with Transaction().start(db_name, user):
+        with Transaction().start(db_name, user, context=context):
             pool = Pool()
             SaleShop = pool.get('sale.shop')
             Sale = pool.get('sale.sale')
