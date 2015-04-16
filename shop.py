@@ -191,14 +191,14 @@ class SaleShop:
             'external_untaxed_amount': untaxed_amount,
             'external_tax_amount': tax_amount,
             'external_total_amount': total_amount,
-            'external_shipment_amount': values.total_shipping_tax_excl.pyval
+            'external_shipment_amount': values.total_shipping.pyval
                 and Decimal(values.total_shipping.pyval).quantize(
                     Decimal('.01'))
                 or None,
-            'shipping_price': Decimal(values.total_shipping.pyval),
+            'shipping_price': Decimal(values.total_shipping_tax_excl.pyval),
             'shipping_note': None,
-            'discount': values.total_discounts.pyval
-                and Decimal(values.total_discounts.pyval)
+            'discount': values.total_discounts_tax_excl.pyval
+                and Decimal(values.total_discounts_tax_excl.pyval)
                 or None,
             'payment': values.payment.pyval,
             'status': str(values.current_state.pyval),
