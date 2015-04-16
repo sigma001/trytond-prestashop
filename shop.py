@@ -197,8 +197,8 @@ class SaleShop:
                 or None,
             'shipping_price': Decimal(values.total_shipping_tax_excl.pyval),
             'shipping_note': None,
-            'discount': values.total_discounts_tax_excl.pyval
-                and Decimal(values.total_discounts_tax_excl.pyval)
+            'discount': -values.total_discounts_tax_excl.pyval
+                and -Decimal(values.total_discounts_tax_excl.pyval)
                 or None,
             'payment': values.payment.pyval,
             'status': str(values.current_state.pyval),
