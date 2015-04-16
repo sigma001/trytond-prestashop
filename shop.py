@@ -261,14 +261,17 @@ class SaleShop:
             values.total_paid.pyval)
 
         payment_commission = (total_paid
-            - values.total_products_wt.pyval - values.total_shipping) / 1.21
-        vals = {
-            'product': 'payment_%s' % values.payment.pyval,
-            'quantity': Decimal('1.0'),
-            'description': '%s' % values.payment.pyval,
-            'unit_price': Decimal(payment_commission).quantize(Decimal('.01')),
-            }
-        vlist.append(vals)
+            - values.total_products_wt.pyval - values.total_shipping.pyval
+            + values.total_discounts_tax_incl.pyval) / 1.21
+        if payment_commission:
+            vals = {
+                'product': 'payment_%s' % values.payment.pyval,
+                'quantity': Decimal('1.0'),
+                'description': '%s' % values.payment.pyval,
+                'unit_price': Decimal(payment_commission).quantize(Decimal(
+                        '.01')),
+                }
+            vlist.append(vals)
         return vlist
 
     @classmethod
