@@ -88,7 +88,7 @@ class Product:
         return {}
 
     @classmethod
-    def prestashop_product_esale_saleshops(cls, products, app):
+    def prestashop_product_shops(cls, products, app):
         '''
         Get sale shops (websites)
         :param app: obj
@@ -192,7 +192,7 @@ class Product:
                 'code': '%s' % code,
                 }
 
-        tvals['esale_saleshops'] = [('add', [shop])]
+        tvals['shops'] = [('add', [shop])]
 
         # Taxes and list price and cost price with or without taxes
         customer_taxes, list_price, cost_price = (
